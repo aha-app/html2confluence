@@ -109,6 +109,8 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
       
       An unknown named entity reference - &unknownref; 
       
+      <p>Some text with <u>underlining</u> is here.</p>
+      
     </div>
     END
     parser = HTMLToConfluenceParser.new
@@ -124,6 +126,10 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   
   it "should convert paragraph tags" do
     @textile.should match(/^p(\([^\)]+\))?\./)
+  end
+  
+  it "should convert underline tags" do
+    @textile.should include("text with +underlining+ is here")
   end
   
   it "should remove empty list items" do
@@ -175,7 +181,7 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   end
   
   it "should respect trailing line break tags within other elements" do
-    @textile.should include("*Please apply online at:*\n\"www.something.co.uk/careers\":http://www.something.co.uk/careers")
+    @textile.should include("*Please apply online at:*\n[www.something.co.uk/careers|http://www.something.co.uk/careers]")
   end
   
   it "should handle nested inline elements (even with spacing between the nested elements)" do

@@ -389,7 +389,7 @@ class HTMLToConfluenceParser < SGMLParser
 
   PAIRS = { 'blockquote' => 'bq', 'p' => 'p' }
   QUICKTAGS = { 'b' => '*', 'strong' => '*', 
-    'i' => '_', 'em' => '_', 'cite' => '??', 's' => '-', 
+    'i' => '_', 'u' => '+', 'em' => '_', 'cite' => '??', 's' => '-', 
     'sup' => '^', 'sub' => '~', 'code' => '@', 'span' => '%'}
   
   PAIRS.each do |key, value|
