@@ -461,8 +461,7 @@ class HTMLToConfluenceParser < SGMLParser
     self.a_href = attrs['href']
     self.a_title = attrs['title']
     if self.a_href
-      write(" \"")
-      write('(' + attrs['class'] + ')') if attrs['class']
+      write(" [")
       start_capture("a")
     end
   end
@@ -470,8 +469,8 @@ class HTMLToConfluenceParser < SGMLParser
   def end_a
     if self.a_href
       stop_capture_and_write
-      write('(' + self.a_title + ')') if self.a_title
-      write(["\":", self.a_href, " "])
+      write('(' + self.a_title + ')') if self.a_title && self.a_title.length > 0
+      write(["|", self.a_href, "] "])
 
       self.a_href = self.a_title = false
     end
