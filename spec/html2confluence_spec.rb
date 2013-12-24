@@ -111,6 +111,13 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
       
       <p>Some text with <u>underlining</u> is here.</p>
       
+      # Not a list
+      * Not a list
+      - Not a list
+      *Not bold*
+      _Not a emph_
+      {Not curly}
+      |Not table
     </div>
     END
     parser = HTMLToConfluenceParser.new
@@ -197,7 +204,7 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   end
   
   it "should use square bracket syntax for superscript and subscript quicktags" do
-    @textile.should include('An ordinal number- 1[^st^]')
+    @textile.should include('An ordinal number \- 1[^st^]')
   end
   
   it "should remove unsupported attributes (i.e. everything but class and id)" do
@@ -230,6 +237,16 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   it "should retain whitespace surrounding entity references" do
     @textile.should include("… € 100")
     @textile.should include("Something & something")
+  end
+  
+  it "should escape special characters" do
+    @textile.should include("\\# Not a list")
+    @textile.should include("\\* Not a list")
+    @textile.should include("\\- Not a list")
+    @textile.should include("\\*Not bold\\*")
+    @textile.should include("\\_Not a emph\\_")
+    @textile.should include("\\{Not curly\\}")
+    @textile.should include("\\|Not table")
   end
   
 end

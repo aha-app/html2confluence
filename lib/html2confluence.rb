@@ -299,6 +299,13 @@ class HTMLToConfluenceParser < SGMLParser
     s.to_s.gsub(/\s+/x, ' ')
   end
   
+  # Escape any special characters.
+  def escape_special_characters(s)
+    s.to_s.gsub(/[*#+\-_{}|]/) do |s|
+      "\\#{s}"
+    end
+  end
+  
   def build_styles_ids_and_classes(attributes)
     idclass = ''
     idclass += attributes['class'] if attributes.has_key?('class')
@@ -374,7 +381,7 @@ class HTMLToConfluenceParser < SGMLParser
   end
 
   def handle_data(data)
-    write(normalise_space(data).lstrip) unless data.nil? or data == ''
+    write(normalise_space(escape_special_characters(data)).lstrip) unless data.nil? or data == ''
   end
 
   %w[1 2 3 4 5 6].each do |num|
