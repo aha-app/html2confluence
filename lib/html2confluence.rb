@@ -301,6 +301,9 @@ class HTMLToConfluenceParser < SGMLParser
   
   # Escape any special characters.
   def escape_special_characters(s)
+    return s
+    # Escaping is disabled now since it caused more problems that not having 
+    # it. The insertion of unecessary escaping was annoying for JIRA users.
     s.to_s.gsub(/[*#+\-_{}|]/) do |s|
       "\\#{s}"
     end
