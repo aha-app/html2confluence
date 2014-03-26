@@ -288,6 +288,7 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
     @output = String.new
     @stack = []
     @preserveWhitespace = false
+    @last_write = ""
     self.in_block = false
     self.result = []
     self.data_stack = []
@@ -363,6 +364,7 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   end
   
   def write(d)
+    @last_write = Array(d).join("")
     if self.data_stack.size < 2
       self.result += Array(d)
     else
@@ -390,7 +392,13 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
       puts "<p>PRESERVING #{data.inspect}</p>"
       write(data)
     else
-      write(normalise_space(escape_special_characters(data)).lstrip) unless data.nil? or data == ''
+      data ||= ""
+      data = normalise_space(escape_special_characters(data))
+      if @last_write[-1] =~ /\s/
+        data = data.lstrip # Collapse whitespace if the previous character was whitespace.
+      end
+        
+      write(data)
     end
   end
 

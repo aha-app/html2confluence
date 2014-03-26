@@ -249,7 +249,7 @@ preformatted piece of text
   end
   
   it "should convert horizontal rules" do
-    @textile.should match(/^---$/)
+    @textile.should match(/^---/)
   end
   
   it "should convert dashes" do
