@@ -139,10 +139,6 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
     @textile.should include("text with +underlining+ is here")
   end
   
-  it "should remove empty list items" do
-    @textile.should include("# test 3\n\n")
-  end
-  
   it "should not explicitly markup paragraphs unnecessarily" do
     @textile.should_not include("p. test paragraph without id or class attributes")
   end
@@ -201,10 +197,6 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   
   it "should remove unsupported elements (e.g. script)" do
     @textile.should_not include('script')
-  end
-  
-  it "should use square bracket syntax for superscript and subscript quicktags" do
-    @textile.should include('An ordinal number \- 1[^st^]')
   end
   
   it "should remove unsupported attributes (i.e. everything but class and id)" do
