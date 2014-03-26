@@ -340,12 +340,9 @@ class HTMLToConfluenceParser < SGMLParser
     attributes = attrs_to_hash(attributes)
     class_style = build_styles_ids_and_classes(attributes)
     @skip_quicktag = ( tag == 'span' && class_style.length == 0 )
-    # use square brackets for superscript and subscript to avoid whitespace issues
-    # this may be RedCloth specific, but as it's the de facto standard textile library for Ruby, should be ok
-    @use_square_brackets = ( !@stack.empty? && %w{ sub sup }.include?(@stack[@stack.size-1]) )
     unless @skip_quicktag
       unless in_nested_quicktag?
-        @use_square_brackets ? write(["["]) : write([" "]) 
+        write([" "]) 
       end
       write(["#{wrapchar}#{class_style}"])
     end
@@ -356,7 +353,7 @@ class HTMLToConfluenceParser < SGMLParser
     stop_capture_and_write
     write([wrapchar]) unless @skip_quicktag
     unless in_nested_quicktag?
-      @use_square_brackets ? write(["]"]) : write([" "]) 
+      write([" "]) 
     end
   end
   
@@ -398,8 +395,8 @@ class HTMLToConfluenceParser < SGMLParser
   end
 
   PAIRS = { 'blockquote' => 'bq', 'p' => 'p' }
-  QUICKTAGS = { 'b' => '*', 'strong' => '*', 
-    'i' => '_', 'u' => '+', 'em' => '_', 'cite' => '??', 's' => '-', 
+  QUICKTAGS = { 'b' => '*', 'strong' => '*', 'del' => '-',
+    'i' => '_', 'ins' => '+', 'em' => '_', 'cite' => '??', 
     'sup' => '^', 'sub' => '~', 'code' => '@', 'span' => '%'}
   
   PAIRS.each do |key, value|
@@ -431,6 +428,14 @@ class HTMLToConfluenceParser < SGMLParser
     stop_capture_and_write
     write("\n\n")
   end  
+  
+  def start_tt(attrs)
+    write("{{")
+  end
+  
+  def end_tt
+    write("}}")
+  end
   
   def start_ol(attrs)
     self.in_ol = true
