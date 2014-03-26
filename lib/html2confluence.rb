@@ -1,4 +1,4 @@
-require 'sgml_parser'
+require 'nokogiri'
 
 # A class to convert HTML to textile. Based on the python parser
 # found at http://aftnn.org/content/code/html2textile/
@@ -16,15 +16,14 @@ require 'sgml_parser'
 #   parser = HTMLToTextileParser.new
 #   parser.feed(input_html)
 #   puts parser.to_textile
-class HTMLToConfluenceParser < SGMLParser
+class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   
   attr_accessor :result
   attr_accessor :in_block
   attr_accessor :data_stack
   attr_accessor :a_href
   attr_accessor :a_title
-  attr_accessor :in_ul
-  attr_accessor :in_ol
+  attr_accessor :list_stack
   
   @@permitted_tags = []
   @@permitted_attributes = []
@@ -287,10 +286,11 @@ class HTMLToConfluenceParser < SGMLParser
   
   def initialize(verbose=nil)
     @output = String.new
+    @stack = []
     self.in_block = false
     self.result = []
     self.data_stack = []
-    super(verbose)
+    self.list_stack = []
   end
   
   # Normalise space in the same manner as HTML. Any substring of multiple
@@ -320,7 +320,6 @@ class HTMLToConfluenceParser < SGMLParser
   end
   
   def make_block_start_pair(tag, attributes)
-    attributes = attrs_to_hash(attributes)
     class_style = build_styles_ids_and_classes(attributes)
     if tag == 'p' && class_style.length == 0
       # don't markup paragraphs explicitly unless necessary (i.e. there are id or class attributes)
@@ -337,7 +336,6 @@ class HTMLToConfluenceParser < SGMLParser
   end
   
   def make_quicktag_start_pair(tag, wrapchar, attributes)
-    attributes = attrs_to_hash(attributes)
     class_style = build_styles_ids_and_classes(attributes)
     @skip_quicktag = ( tag == 'span' && class_style.length == 0 )
     unless @skip_quicktag
@@ -443,41 +441,43 @@ class HTMLToConfluenceParser < SGMLParser
   end
   
   def start_ol(attrs)
-    self.in_ol = true
-    write("\n\n")
+    self.list_stack.push :ol
   end
 
   def end_ol
-    self.in_ol = false
-    write("\n")
+    self.list_stack.pop
+    if self.list_stack.empty?
+      write("\n")
+    end
   end
 
   def start_ul(attrs)
-    self.in_ul = true
-    write("\n\n")
+    puts "<p>START UL #{self.list_stack.inspect}</p>"
+    self.list_stack.push :ul
   end
 
   def end_ul
-    self.in_ul = false
-    write("\n")
+    puts "<p>END UL #{self.list_stack.inspect}</p>"
+    self.list_stack.pop
+    if self.list_stack.empty?
+      write("\n")
+    end
   end
   
   def start_li(attrs)
-    if self.in_ol
-      write("# ")
-    else
-      write("* ")
-    end
+    puts "<p>START LI #{self.list_stack.inspect} #{self.data_stack.inspect}</p>"
+    write("\n")
+    write(self.list_stack.collect {|s| (s == :ol) ? "#" : "*" }.join(""))
+    write(" ")
     start_capture("li")
   end
 
   def end_li
+    puts "<p>END LI #{self.list_stack.inspect} #{self.data_stack.inspect}</p>"
     stop_capture_and_write
-    write("\n")
   end
 
   def start_a(attrs)
-    attrs = attrs_to_hash(attrs)
     self.a_href = attrs['href']
     self.a_title = attrs['title']
     if self.a_href
@@ -501,7 +501,6 @@ class HTMLToConfluenceParser < SGMLParser
   end
   
   def start_font(attrs)
-    attrs = attrs_to_hash(attrs)
     color = attrs['color']
     write("{color:#{color}}")
   end
@@ -509,13 +508,8 @@ class HTMLToConfluenceParser < SGMLParser
   def end_font
     write("{color}")
   end
-  
-  def attrs_to_hash(array)
-    array.inject({}) { |collection, part| collection[part[0].downcase] = part[1]; collection }
-  end
 
   def start_img(attrs)
-    attrs = attrs_to_hash(attrs)
     write([" !", attrs["src"], "! "])
   end
   
@@ -598,7 +592,7 @@ class HTMLToConfluenceParser < SGMLParser
     end
   end
   
-  def feed(data)
+  def preprocess(data)
     # pre-process input before feeding to the sgml parser (some things are difficult to parse)
     # Simplify single line blockquotes.
     data.gsub!(/<blockquote>([^\n]*?)<\/blockquote>/i) do |m|
@@ -623,7 +617,7 @@ class HTMLToConfluenceParser < SGMLParser
     # remove empty blockquotes and list items (other empty elements are easy enough to deal with)
     data.gsub!(/<blockquote>\s*(<br[^>]*>)?\s*<\/blockquote>/x,' ')
     data.gsub!(/<li>\s*(<br[^>]*>)?\s*<\/li>/x,'')
-    super(data)
+    data
   end
   
   # Return the textile after processing
@@ -663,10 +657,27 @@ class HTMLToConfluenceParser < SGMLParser
     return output
   end
   
-  # UNCONVERTED PYTHON METHODS
-  #
-  # def handle_starttag(self, tag, method, attrs):
-  #     method(dict(attrs))
-  #     
   
+  def feed(data)
+    parser = Nokogiri::HTML::SAX::Parser.new(self)
+    parser.parse(preprocess("<div>#{data}</div>"))
+  end
+
+  def start_element(name, attributes = [])
+    @stack.push(name)
+    if self.respond_to?("start_#{name}")
+      self.send("start_#{name}", Hash[attributes])
+    end
+  end
+  
+  def end_element(name)
+    if self.respond_to?("end_#{name}")
+      self.send("end_#{name}")
+    end
+    @stack.pop
+  end
+  
+  def characters(string)
+    handle_data(string)
+  end
 end

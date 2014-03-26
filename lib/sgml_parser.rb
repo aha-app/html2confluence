@@ -1,61 +1,26 @@
-# A parser for SGML, using the derived class as static DTD.
+# A parser for SGML using Nokogiri
 
 class SGMLParser
-
-  # Regular expressions used for parsing:
-  Interesting = /(<|&#?[a-zA-Z0-9]+;)/
-  Incomplete = Regexp.compile('&([a-zA-Z][a-zA-Z0-9]*|#[0-9]*)?|' +
-                              '<([a-zA-Z][^<>]*|/([a-zA-Z][^<>]*)?|' +
-                              '![^<>]*)?')
-
-  Entityref = /(\s?)&([a-zA-Z]+);(\s?)/
-  Charref = /(\s?)&#([0-9]+);(\s?)/
-
-  Starttagopen = /<[>a-zA-Z]/
-  Endtagopen = /<\/[<>a-zA-Z]/
-  Endbracket = /[<>]/
-  Special = /<![^<>]*>/
-  Commentopen = /<!--/
-  Commentclose = /--[ \t\n]*>/
-  Tagfind = /[a-zA-Z][a-zA-Z0-9.-]*/
-  Attrfind = Regexp.compile('[\s,]*([a-zA-Z_][a-zA-Z_0-9.-]*)' +
-                            '(\s*=\s*' +
-                            "('[^']*'" +
-                            '|"[^"]*"' +
-                            '|[-~a-zA-Z0-9,./:+*%?!()_#=]*))?')
-
-  Entitydefs =
-    {'lt'=>'<', 'gt'=>'>', 'amp'=>'&', 'quot'=>'"', 'apos'=>'\''}
-
+  include XML::SaxParser::Callbacks
+  
   def initialize(verbose=false)
     @verbose = verbose
-    reset
-  end
-
-  def reset
-    @rawdata = ''
-    @stack = []
-    @lasttag = '???'
-    @nomoretags = false
-    @literal = false
-  end
-
-  def has_context(gi)
-    @stack.include? gi
-  end
-
-  def setnomoretags
-    @nomoretags = true
-    @literal = true
-  end
-
-  def setliteral(*args)
-    @literal = true
   end
 
   def feed(data)
-    @rawdata << data
-    goahead(false)
+    parser = Nokogiri::HTML::SAX::Parser.new(self)
+    parser.parse(date)
+  end
+
+  def on_start_element_ns(name, attributes, prefix, uri, namespaces)
+    self.send("start_#{name}", attrs)
+  end
+  
+  def on_end_element_ns(name, prefix, uri)
+    self.send("end_#{name}")
+  end
+  
+  def on_characters(chars)
   end
 
   def close

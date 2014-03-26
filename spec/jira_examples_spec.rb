@@ -264,4 +264,8 @@ describe HTMLToConfluenceParser, "when running JIRA examples" do
     @textile.should match(/^\[file\:\/\/\/c\:\/temp\/foo.txt\]/)
   end
   
+  it "should convert bullets" do
+    @textile.should match(/\* some\s*\* bullet\s*\*\* indented\s*\*\* bullets\s*\* points/)
+  end
+  
 end

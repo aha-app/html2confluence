@@ -10,4 +10,4 @@ html2textile.
 There are some JIRA/Confluence markup that we do not support:
 
 * The [mailto:] tag.
-* 
+* The {anchor:} tag.
