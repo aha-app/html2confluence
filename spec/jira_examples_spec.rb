@@ -276,4 +276,8 @@ preformatted piece of text
     @textile.should match(/^\{noformat\}\s*preformatted piece of text\s*so \*no\* further _formatting_ is done here\s*\{noformat\}/)
   end
   
+  it "should convert tables" do
+    @textile.should include("sdfdsf")
+  end
+  
 end

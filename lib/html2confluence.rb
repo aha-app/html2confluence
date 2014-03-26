@@ -562,12 +562,13 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   end
   
   def start_th(attrs)
-    write("|")
+    write("||")
     start_capture("th")
   end
 
   def end_th
     stop_capture_and_write
+    write("|")
   end  
 
   def start_td(attrs)
@@ -588,7 +589,7 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   end
   
   def start_blockquote(attrs)
-    write("{quote}")
+    write("\n{quote}")
   end
 
   def end_blockquote

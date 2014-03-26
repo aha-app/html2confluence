@@ -91,8 +91,7 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
       <p>
         <strong>Please apply online at:<br /></strong><a href="http://www.something.co.uk/careers">www.something.co.uk/careers</a></p>
       
-      <p>test <strong> 
-      <em>test emphasised<br />bold text</em> </strong>test
+      <p>test <strong><em>test emphasised bold text</em> </strong>test
       An ordinal number - 1<sup>st </sup>
       </p>
 
@@ -176,7 +175,7 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   end
   
   it "should handle paragraphs nested within blockquote" do
-    @textile.should include("\n\nbq. paragraph inside a blockquote\n\nbq. another paragraph inside a blockquote\n\n")
+    @textile.should include("{quote} \n\nparagraph inside a blockquote\n\nanother paragraph inside a blockquote\n\n{quote}")
   end
   
   it "should retain leading and trailing whitespace within inline elements" do
@@ -187,8 +186,8 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
     @textile.should include("*Please apply online at:*\n[www.something.co.uk/careers|http://www.something.co.uk/careers]")
   end
   
-  it "should handle nested inline elements (even with spacing between the nested elements)" do
-    @textile.should include(" *_test emphasised\nbold text_* test")
+  it "should handle nested inline elements" do
+    @textile.should include(" *_test emphasised bold text_* test")
   end
   
   it "should remove empty quicktags before returning" do
