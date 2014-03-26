@@ -287,6 +287,7 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   def initialize(verbose=nil)
     @output = String.new
     @stack = []
+    @preserveWhitespace = false
     self.in_block = false
     self.result = []
     self.data_stack = []
@@ -296,6 +297,7 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   # Normalise space in the same manner as HTML. Any substring of multiple
   # whitespace characters will be replaced with a single space char.
   def normalise_space(s)
+    return s if @preserveWhitespace
     s.to_s.gsub(/\s+/x, ' ')
   end
   
@@ -340,7 +342,7 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
     @skip_quicktag = ( tag == 'span' && class_style.length == 0 )
     unless @skip_quicktag
       unless in_nested_quicktag?
-        write([" "]) 
+        #write([" "]) 
       end
       write(["#{wrapchar}#{class_style}"])
     end
@@ -351,7 +353,7 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
     stop_capture_and_write
     write([wrapchar]) unless @skip_quicktag
     unless in_nested_quicktag?
-      write([" "]) 
+      #write([" "]) 
     end
   end
   
@@ -384,7 +386,12 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   end
 
   def handle_data(data)
-    write(normalise_space(escape_special_characters(data)).lstrip) unless data.nil? or data == ''
+    if @preserveWhitespace
+      puts "<p>PRESERVING #{data.inspect}</p>"
+      write(data)
+    else
+      write(normalise_space(escape_special_characters(data)).lstrip) unless data.nil? or data == ''
+    end
   end
 
   %w[1 2 3 4 5 6].each do |num|
@@ -452,12 +459,14 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   end
 
   def start_ul(attrs)
-    puts "<p>START UL #{self.list_stack.inspect}</p>"
-    self.list_stack.push :ul
+    if  attrs['type'] == "square"
+      self.list_stack.push :ul_square
+    else
+      self.list_stack.push :ul
+    end
   end
 
   def end_ul
-    puts "<p>END UL #{self.list_stack.inspect}</p>"
     self.list_stack.pop
     if self.list_stack.empty?
       write("\n")
@@ -465,15 +474,19 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   end
   
   def start_li(attrs)
-    puts "<p>START LI #{self.list_stack.inspect} #{self.data_stack.inspect}</p>"
     write("\n")
-    write(self.list_stack.collect {|s| (s == :ol) ? "#" : "*" }.join(""))
+    write(self.list_stack.collect {|s| 
+        case s
+        when :ol then "#"
+        when :ul then "*"
+        when :ul_square then "-" 
+        end 
+      }.join(""))
     write(" ")
     start_capture("li")
   end
 
   def end_li
-    puts "<p>END LI #{self.list_stack.inspect} #{self.data_stack.inspect}</p>"
     stop_capture_and_write
   end
 
@@ -481,7 +494,7 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
     self.a_href = attrs['href']
     self.a_title = attrs['title']
     if self.a_href
-      write(" [")
+      write("[")
       start_capture("a")
     end
   end
@@ -571,7 +584,19 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   end
 
   def end_blockquote
+    stop_capture_and_write
     write("{quote}")
+  end
+  
+  def start_pre(attrs)
+    @preserveWhitespace = true
+    write("{noformat}\n")
+  end
+
+  def end_pre
+    stop_capture_and_write
+    write("\n{noformat}")
+    @preserveWhitespace = false
   end
   
   def unknown_starttag(tag, attrs)
@@ -648,11 +673,11 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
     output.gsub!(/bq. \n+(\w)/,'bq. \1')
     QUICKTAGS.values.uniq.each do |t|
       output.gsub!(/ #{Regexp.escape(t)}\s+#{Regexp.escape(t)} /,' ') # removes empty quicktags
-      output.gsub!(/(\[?#{Regexp.escape(t)})(\w+)([^#{Regexp.escape(t)}]+)(\s+)(#{Regexp.escape(t)}\]?)/,'\1\2\3\5\4') # fixes trailing whitespace before closing quicktags
+      #output.gsub!(/(\[?#{Regexp.escape(t)})(\w+)([^#{Regexp.escape(t)}]+)(\s+)(#{Regexp.escape(t)}\]?)/,'\1\2\3\5\4') # fixes trailing whitespace before closing quicktags
     end
-    output.squeeze!(' ')
-    output.gsub!(/^[ \t]/,'') # leading whitespace
-    output.gsub!(/[ \t]$/,'') # trailing whitespace
+    #output.squeeze!(' ')
+    #output.gsub!(/^[ \t]/,'') # leading whitespace
+    #output.gsub!(/[ \t]$/,'') # trailing whitespace
     output.strip!
     return output
   end
@@ -678,6 +703,7 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   end
   
   def characters(string)
+    puts "<p>STRING: #{string.inspect}</p>"
     handle_data(string)
   end
 end
