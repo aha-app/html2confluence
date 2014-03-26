@@ -406,7 +406,7 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
 
   PAIRS = { 'bq' => 'bq', 'p' => 'p' }
   QUICKTAGS = { 'b' => '*', 'strong' => '*', 'del' => '-',
-    'i' => '_', 'ins' => '+', 'em' => '_', 'cite' => '??', 
+    'i' => '_', 'ins' => '+', 'u' => '+', 'em' => '_', 'cite' => '??', 
     'sup' => '^', 'sub' => '~', 'code' => '@', 'span' => '%'}
   
   PAIRS.each do |key, value|
@@ -660,10 +660,6 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
     else
       write('['+entityref+']')
     end
-  end
-  
-  def handle_whitespace(data)
-    write(normalise_space(data)) unless data.nil? or data == ''
   end
   
   def fix_textile_whitespace!(output)
