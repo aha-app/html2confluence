@@ -375,6 +375,11 @@ class HTMLToConfluenceParser < SGMLParser
     self.data_stack.push([])
   end
   
+  def stop_capture
+    self.in_block = false
+    self.data_stack.pop
+  end
+  
   def stop_capture_and_write
     self.in_block = false
     self.write(self.data_stack.pop)
@@ -394,7 +399,7 @@ class HTMLToConfluenceParser < SGMLParser
     end
   end
 
-  PAIRS = { 'blockquote' => 'bq', 'p' => 'p' }
+  PAIRS = { 'bq' => 'bq', 'p' => 'p' }
   QUICKTAGS = { 'b' => '*', 'strong' => '*', 'del' => '-',
     'i' => '_', 'ins' => '+', 'em' => '_', 'cite' => '??', 
     'sup' => '^', 'sub' => '~', 'code' => '@', 'span' => '%'}
@@ -483,14 +488,28 @@ class HTMLToConfluenceParser < SGMLParser
 
   def end_a
     if self.a_href
-      stop_capture_and_write
-      write('(' + self.a_title + ')') if self.a_title && self.a_title.length > 0
-      write(["|", self.a_href, "] "])
+      content = stop_capture
+      if self.a_href.gsub(/^#/, "") == content.join("")
+        write([self.a_href, "] "])
+      else
+        write(content)
+        write(["|", self.a_href, "] "])
+      end
 
       self.a_href = self.a_title = false
     end
   end
-
+  
+  def start_font(attrs)
+    attrs = attrs_to_hash(attrs)
+    color = attrs['color']
+    write("{color:#{color}}")
+  end
+  
+  def end_font
+    write("{color}")
+  end
+  
   def attrs_to_hash(array)
     array.inject({}) { |collection, part| collection[part[0].downcase] = part[1]; collection }
   end
@@ -549,6 +568,18 @@ class HTMLToConfluenceParser < SGMLParser
     write("\n")
   end
   
+  def start_hr(attrs)
+    write("---")
+  end
+  
+  def start_blockquote(attrs)
+    write("{quote}")
+  end
+
+  def end_blockquote
+    write("{quote}")
+  end
+  
   def unknown_starttag(tag, attrs)
     if @@permitted_tags.include?(tag)
       write(["<", tag])
@@ -569,9 +600,9 @@ class HTMLToConfluenceParser < SGMLParser
   
   def feed(data)
     # pre-process input before feeding to the sgml parser (some things are difficult to parse)
-    # can't handle paragraphs nested within blockquotes, turn them into multiple blockquotes
-    data.gsub!(/<blockquote>((\s*<p[^>]*>.*<\/p>\s*){1,})<\/blockquote>/xi) do |m|
-      $1.strip.gsub(/<(\/?)p([^>]*)>/i,'<\1blockquote\2>')
+    # Simplify single line blockquotes.
+    data.gsub!(/<blockquote>([^\n]*?)<\/blockquote>/i) do |m|
+      "<bq>#{$1}</bq>"
     end
     # clean up leading and trailing spaces within phrase modifier tags
     quicktags_for_re = QUICKTAGS.keys.uniq.join('|')
@@ -585,6 +616,10 @@ class HTMLToConfluenceParser < SGMLParser
     end
     # replace non-breaking spaces
     data.gsub!(/&(nbsp|#160);/,' ')
+    # replace special entities.
+    data.gsub!(/&(mdash|#8212);/,'---')
+    data.gsub!(/&(ndash|#8211);/,'--')
+    
     # remove empty blockquotes and list items (other empty elements are easy enough to deal with)
     data.gsub!(/<blockquote>\s*(<br[^>]*>)?\s*<\/blockquote>/x,' ')
     data.gsub!(/<li>\s*(<br[^>]*>)?\s*<\/li>/x,'')

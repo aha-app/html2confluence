@@ -6,50 +6,48 @@ describe HTMLToConfluenceParser, "when running JIRA examples" do
   
   before :all do
     html = <<-END
-    <h1><a name="Biggestheading" title="Follow link"></a>Biggest heading</h1>
-    <h2><a name="Biggerheading" title="Follow link"></a>Bigger heading</h2>
-    <h3><a name="Bigheading" title="Follow link"></a>Big heading</h3>
-    <h4><a name="Normalheading" title="Follow link"></a>Normal heading</h4>
-    <h5><a name="Smallheading" title="Follow link"></a>Small heading</h5>
-    <h6><a name="Smallestheading" title="Follow link"></a>Smallest heading</h6>
+    <h1><a name="Biggestheading"></a>Biggest heading</h1>
+    <h2><a name="Biggerheading"></a>Bigger heading</h2>
+    <h3><a name="Bigheading"></a>Big heading</h3>
+    <h4><a name="Normalheading"></a>Normal heading</h4>
+    <h5><a name="Smallheading"></a>Small heading</h5>
+    <h6><a name="Smallestheading"></a>Smallest heading</h6>
 
-    <p><b>strong</b><br>
-    <em>emphasis</em><br>
-    <cite>citation</cite><br>
-    <del>deleted</del><br>
-    <ins>inserted</ins><br>
-    <sup>superscript</sup><br>
-    <sub>subscript</sub><br>
+    <p><b>strong</b><br/>
+    <em>emphasis</em><br/>
+    <cite>citation</cite><br/>
+    <del>deleted</del><br/>
+    <ins>inserted</ins><br/>
+    <sup>superscript</sup><br/>
+    <sub>subscript</sub><br/>
     <tt>monospaced</tt></p>
     <blockquote><p>Some block quoted text</p></blockquote>
 
     <blockquote>
-    <p> here is quotable<br>
+    <p> here is quotable<br/>
      content to be quoted</p></blockquote>
 
-    <p><font color="red"><br>
+    <p><font color="red"><br/>
         look ma, red text!</font></p>
 
-    <p>a<br class="atl-forced-newline">b</p>
+    <p>a<br class="atl-forced-newline" />b</p>
 
-    <p>a<br>
+    <p>a<br/>
     b</p>
 
-    <hr>
+    <hr />
 
-    <p>a – b<br>
-    a — b</p>
+    <p>a &#8211; b<br/>
+    a &#8212; b</p>
 
-    <p><a href="#anchor" title="Follow link">anchor</a></p>
+    <p><a href="#anchor">anchor</a></p>
 
-    <p><a href="http://jira.atlassian.com" class="external-link" rel="nofollow" title="Follow link">http://jira.atlassian.com</a><br>
-    <a href="http://atlassian.com" class="external-link" rel="nofollow" title="Follow link">Atlassian</a></p>
+    <p><a href="http://jira.atlassian.com" class="external-link" rel="nofollow">http://jira.atlassian.com</a><br/>
+    <a href="http://atlassian.com" class="external-link" rel="nofollow">Atlassian</a></p>
 
-    <p><span class="nobr"><a href="mailto:legendaryservice@atlassian.com" class="external-link" rel="nofollow" title="Follow link">legendaryservice@atlassian.com<sup><img class="rendericon" src="/images/icons/mail_small.gif" height="12" width="13" align="absmiddle" alt="" border="0"></sup></a></span></p>
+    <p><a href="file:///c:/temp/foo.txt" class="external-link" rel="nofollow">file:///c:/temp/foo.txt</a></p>
 
-    <p><a href="file:///c:/temp/foo.txt" class="external-link" rel="nofollow" title="Follow link">file:///c:/temp/foo.txt</a></p>
-
-    <p><a name="anchorname" title="Follow link"></a></p>
+    <p><a name="anchorname"></a></p>
 
     <ul>
     	<li>some</li>
@@ -103,21 +101,21 @@ describe HTMLToConfluenceParser, "when running JIRA examples" do
     </ul>
 
 
-    <table class="confluenceTable"><tbody>
+    <table class='confluenceTable'><tbody>
     <tr>
-    <th class="confluenceTh">heading 1</th>
-    <th class="confluenceTh">heading 2</th>
-    <th class="confluenceTh">heading 3</th>
+    <th class='confluenceTh'>heading 1</th>
+    <th class='confluenceTh'>heading 2</th>
+    <th class='confluenceTh'>heading 3</th>
     </tr>
     <tr>
-    <td class="confluenceTd">col A1</td>
-    <td class="confluenceTd">col A2</td>
-    <td class="confluenceTd">col A3</td>
+    <td class='confluenceTd'>col A1</td>
+    <td class='confluenceTd'>col A2</td>
+    <td class='confluenceTd'>col A3</td>
     </tr>
     <tr>
-    <td class="confluenceTd">col B1</td>
-    <td class="confluenceTd">col B2</td>
-    <td class="confluenceTd">col B3</td>
+    <td class='confluenceTd'>col B1</td>
+    <td class='confluenceTd'>col B2</td>
+    <td class='confluenceTd'>col B3</td>
     </tr>
     </tbody></table>
 
@@ -170,8 +168,6 @@ describe HTMLToConfluenceParser, "when running JIRA examples" do
 
     [http://jira.atlassian.com]
     [Atlassian|http://atlassian.com]
-
-    [mailto:legendaryservice@atlassian.com]
 
     [file:///c:/temp/foo.txt]
 
@@ -243,5 +239,29 @@ describe HTMLToConfluenceParser, "when running JIRA examples" do
     @textile.should match(/^\{\{monospaced\}\}/)
   end
   
+  it "should convert block quotes" do
+    @textile.should match(/^bq. Some block quoted text/)
+    @textile.should match(/^\{quote\}\s*here is quotable\s*content to be quoted\s*{quote}/)
+  end
+  
+  it "should handle text color" do
+    @textile.should match(/^\{color\:red\}\s*look ma, red text!\s*\{color\}/)
+  end
+  
+  it "should convert horizontal rules" do
+    @textile.should match(/^---$/)
+  end
+  
+  it "should convert dashes" do
+    @textile.should match(/^a -- b/)
+    @textile.should match(/^a --- b/)
+  end
+  
+  it "should convert links" do
+    @textile.should match(/^\[\#anchor\]/)
+    @textile.should match(/^\[http\:\/\/jira.atlassian.com\]/)
+    @textile.should match(/^\[Atlassian\|http\:\/\/atlassian.com\]/)
+    @textile.should match(/^\[file\:\/\/\/c\:\/temp\/foo.txt\]/)
+  end
   
 end

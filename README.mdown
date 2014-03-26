@@ -7,3 +7,7 @@ html2textile.
     parser.feed(your_html)
     puts parser.to_wiki_markup
 
+There are some JIRA/Confluence markup that we do not support:
+
+* The [mailto:] tag.
+* 
