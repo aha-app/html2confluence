@@ -467,7 +467,7 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   end
 
   def start_ul(attrs)
-    if  attrs['type'] == "square"
+    if attrs['type'] == "square"
       self.list_stack.push :ul_square
     else
       self.list_stack.push :ul
@@ -694,11 +694,12 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   
   
   def feed(data)
-    parser = Nokogiri::HTML::SAX::Parser.new(self)
+    parser = Nokogiri::XML::SAX::Parser.new(self)
     parser.parse(preprocess("<div>#{data}</div>"))
   end
 
   def start_element(name, attributes = [])
+    #puts "<p>Start #{name}</p>"
     @stack.push(name)
     if self.respond_to?("start_#{name}")
       self.send("start_#{name}", Hash[attributes])
@@ -706,6 +707,7 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   end
   
   def end_element(name)
+    #puts "<p>End #{name}</p>"
     if self.respond_to?("end_#{name}")
       self.send("end_#{name}")
     end
