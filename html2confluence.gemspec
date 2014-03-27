@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'html2confluence'
-  s.version     = "1.1.1"
+  s.version     = "1.2.0"
   s.summary     = 'Converter from HTML to Confluence Wiki Markup'
   s.description = 'Provides an SGML parser to convert HTML into the Wiki Markup format'
 
@@ -13,7 +13,4 @@ Gem::Specification.new do |s|
 
   s.require_path = 'lib'
   s.files        = Dir.glob("{lib,spec}/**/*") + %w(example.rb README.mdown)
-  
-  s.add_dependency "nokogiri"
-  
 end

@@ -11,7 +11,7 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
       
       Some text inside a div<br/>with two lines
       <h1 class="story.title entry-title" id="post-312">
-      <img src="path_to_image.png" alt="Converting HTML to Textile with Ruby">
+      <img src="path_to_image.png" alt="Converting HTML to Textile with Ruby" />
         <a href="http://jystewart.net/process/2007/11/converting-html-to-textile-with-ruby/" rel="bookmark">Converting HTML to Textile with Ruby</a>
       </h1>
       
@@ -35,17 +35,16 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
       
       <p>test paragraph without id or class attributes</p>
       
-      <p>test paragraph without closing tag
+      <p>test paragraph without closing tag</p>
       
       <li>test<strong> invalid </strong>list item 1</li>
       <li>test invalid list item 2</li>
       
       <ol>
         <li>test 1</li>
-        <li>test 2<br>with a line break in the middle</li>
+        <li>test 2<br/>with a line break in the middle</li>
         <li>test 3</li>
-        <li> <br/>
-        </li>
+        <li> <br/></li>
       </ol>
       
       x&gt; y
@@ -73,7 +72,7 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
         </tr>
       </table>
       
-      Hughes & Hughes
+      Hughes &amp; Hughes
       
       Something &amp; something else and <span rel="test">a useless span</span>
       
@@ -100,16 +99,17 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
         <script src="http://feeds.feedburner.com/~s/jystewart/iLiN?i=http://jystewart.net/process/2007/11/converting-html-to-textile-with-ruby/" type="text/javascript" charset="utf-8"></script>
       </div>
       
-      <p>&nbsp;<br></p>
-      <blockquote>&nbsp;<br></blockquote>
+      <p>&nbsp;<br/></p>
+      <blockquote>&nbsp;<br/></blockquote>
       <strong>more bold text</strong><strong><br /></strong>
-      
-      &copy; Copyright statement, let's see what happens to this&#8230; &euro; 100
-      
-      An unknown named entity reference - &unknownref; 
-      
+
       <p>Some text with <u>underlining</u> is here.</p>
       
+
+      &copy; Copyright statement, let's see what happens to this&#8230; &euro; 100
+
+      An unknown named entity reference - &unknownref; 
+
       # Not a list
       * Not a list
       - Not a list
@@ -201,12 +201,12 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
     @textile.should_not match(/(\n\n\s*){2,}/)
   end
   
-  it "should convert known named entity references to a utf-8 character" do
-    @textile.should include("©")
+  it "should keep entity references" do
+    @textile.should include("&copy;")
   end
   
-  it "should output unknown named entity references in square brackets" do
-    @textile.should include("[unknownref]")
+  it "should output unknown named entity references" do
+    @textile.should include("&unknownref;")
   end  
   
   it "should convert numerical entity references to a utf-8 character" do
@@ -218,7 +218,7 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   end
   
   it "should retain whitespace surrounding entity references" do
-    @textile.should include("… € 100")
+    @textile.should include("… &euro; 100")
     @textile.should include("Something & something")
   end
   
