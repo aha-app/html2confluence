@@ -373,7 +373,10 @@ class HTMLToConfluenceParser
     
     # remove empty blockquotes and list items (other empty elements are easy enough to deal with)
     data.gsub!(/<blockquote>\s*(<br[^>]*>)?\s*<\/blockquote>/x,' ')
-    #data.gsub!(/<li>\s*(<br[^>]*>)?\s*<\/li>/x,'')
+    
+    # Fix unclosed <br>
+    data.gsub!(/<br>/, "<br/>")
+    
     data
   end
   

@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'html2confluence'
-  s.version     = "1.2.0"
+  s.version     = "1.2.1"
   s.summary     = 'Converter from HTML to Confluence Wiki Markup'
   s.description = 'Provides an SGML parser to convert HTML into the Wiki Markup format'
 

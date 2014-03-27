@@ -37,6 +37,8 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
       
       <p>test paragraph without closing tag</p>
       
+      <p>Break not closed<br> at all</p>
+      
       <li>test<strong> invalid </strong>list item 1</li>
       <li>test invalid list item 2</li>
       
