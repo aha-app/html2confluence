@@ -155,23 +155,15 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   end
   
   it "should convert tables" do
-    @textile.should include("\n\n|heading 1|heading 2|\n|value 1|value 2|\n")
-  end
-  
-  it "should convert caption elements within tables" do
-    @textile.should include("table caption\n\n|heading 1|heading 2|\n|value 1|value 2|\n")
+    @textile.should include("\n\n||heading 1 ||heading 2 || \n|value 1 |value 2 | \n")
   end
   
   it "should convert tables with text immediately preceding the opening table tag" do
-    @textile.should include("Some text before a table\n\n|heading 1|heading 2|\n|value 1|value 2|\n")
+    @textile.should include("Some text before a table\n\n||heading 1 ||heading 2 || \n|value 1 |value 2 | \n")
   end
   
   it "should respect line breaks within block level elements" do
-    @textile.should include("\n\n# test 1\n# test 2\nwith a line break in the middle")
-  end
-  
-  it "should remove empty block level elements (including ones that only include a line break tag)" do
-    @textile.should include("\n\nLeave some feedback...\n\n*more bold text*")
+    @textile.should include("\n# test 1 \n# test 2\nwith a line break in the middle")
   end
   
   it "should handle paragraphs nested within blockquote" do
