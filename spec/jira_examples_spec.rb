@@ -277,7 +277,9 @@ preformatted piece of text
   end
   
   it "should convert tables" do
-    @textile.should include("sdfdsf")
+    @textile.should include("||heading 1 ||heading 2 ||heading 3 ||")
+    @textile.should include("|col A1 |col A2 |col A3 |")
+    @textile.should include("|col B1 |col B2 |col B3 |")
   end
   
 end

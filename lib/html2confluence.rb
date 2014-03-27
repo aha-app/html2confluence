@@ -289,6 +289,7 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
     @stack = []
     @preserveWhitespace = false
     @last_write = ""
+    @tableHeaderRow = false
     self.in_block = false
     self.result = []
     self.data_stack = []
@@ -389,7 +390,6 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
 
   def handle_data(data)
     if @preserveWhitespace
-      puts "<p>PRESERVING #{data.inspect}</p>"
       write(data)
     else
       data ||= ""
@@ -558,22 +558,27 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   end
 
   def end_tr
-    write("|")
+    if @tableHeaderRow
+      write("||")
+    else
+      write("|")
+    end
   end
   
   def start_th(attrs)
     write("||")
     start_capture("th")
+    @tableHeaderRow = true
   end
 
   def end_th
     stop_capture_and_write
-    write("|")
   end  
 
   def start_td(attrs)
     write("|")
     start_capture("td")
+    @tableHeaderRow = false
   end
 
   def end_td
@@ -708,7 +713,6 @@ class HTMLToConfluenceParser < Nokogiri::XML::SAX::Document
   end
   
   def characters(string)
-    puts "<p>STRING: #{string.inspect}</p>"
     handle_data(string)
   end
 end
