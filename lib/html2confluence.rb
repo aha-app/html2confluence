@@ -330,12 +330,23 @@ class HTMLToConfluenceParser
   end
   
   def start_blockquote(attrs)
-    write("\n{quote}")
+    start_capture("blockquote")
   end
 
   def end_blockquote
-    stop_capture_and_write
-    write("{quote}")
+    s = stop_capture
+    contains_newline = s.detect do |phrase|
+      phrase =~ /\n/ or phrase == "bq. "
+    end
+    
+    if contains_newline
+      write("\n{quote}\n")
+      write(s)
+      write("\n{quote}")
+    else
+      write("bq. ")
+      write(s)
+    end
   end
   
   def start_pre(attrs)
@@ -350,11 +361,6 @@ class HTMLToConfluenceParser
   end
   
   def preprocess(data)
-    # pre-process input before feeding to the sgml parser (some things are difficult to parse)
-    # Simplify single line blockquotes.
-    data.gsub!(/<blockquote>([^\n]*?)<\/blockquote>/i) do |m|
-      "<bq>#{$1}</bq>"
-    end
     # clean up leading and trailing spaces within phrase modifier tags
     quicktags_for_re = QUICKTAGS.keys.uniq.join('|')
     leading_spaces_re = /(<(?:#{quicktags_for_re})(?:\s+[^>]*)?>)( +|<br\s*\/?>)/

@@ -169,7 +169,7 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   end
   
   it "should handle paragraphs nested within blockquote" do
-    @textile.should include("{quote} \n\nparagraph inside a blockquote\n\nanother paragraph inside a blockquote\n\n{quote}")
+    @textile.should include("{quote}\n\nparagraph inside a blockquote\n\nanother paragraph inside a blockquote\n\n{quote}")
   end
   
   it "should retain leading and trailing whitespace within inline elements" do

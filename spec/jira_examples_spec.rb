@@ -21,7 +21,7 @@ describe HTMLToConfluenceParser, "when running JIRA examples" do
 <sup>superscript</sup><br/>
 <sub>subscript</sub><br/>
 <tt>monospaced</tt></p>
-<blockquote><p>Some block quoted text</p></blockquote>
+<blockquote>Some block quoted text</blockquote>
 
 <blockquote>
 <p> here is quotable<br/>
