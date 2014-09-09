@@ -133,7 +133,7 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   end
   
   it "should convert paragraph tags" do
-    @textile.should match(/^p(\([^\)]+\))?\./)
+    # We don't include paragraph classes @textile.should match(/^p(\([^\)]+\))?\./)
   end
   
   it "should convert underline tags" do
@@ -153,7 +153,7 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   end
 
   it "should convert class and id attributes" do
-    @textile.should include("h1(story.title entry-title#post-312).")
+    # We don't convert classes. @textile.should include("h1(story.title entry-title#post-312).")
   end
   
   it "should convert tables" do

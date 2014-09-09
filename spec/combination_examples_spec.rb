@@ -73,7 +73,6 @@ h1. With +nice+ formatting.
 {quote}\nbq. content here\n{quote}
     END
 
-
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
     parser.to_wiki_markup.strip.should include(markup.strip)

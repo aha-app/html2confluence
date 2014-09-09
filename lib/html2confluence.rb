@@ -52,23 +52,12 @@ class HTMLToConfluenceParser
     end
   end
   
-  def build_styles_ids_and_classes(attributes)
-    idclass = ''
-    idclass += attributes['class'] if attributes.has_key?('class')
-    idclass += "\##{attributes['id']}" if attributes.has_key?('id')
-    idclass = "(#{idclass})" if idclass != ''
-    
-    style = attributes.has_key?('style') ? "{#{attributes['style']}}" : ""
-    "#{idclass}#{style}"
-  end
-  
   def make_block_start_pair(tag, attributes)
-    class_style = build_styles_ids_and_classes(attributes)
-    if tag == 'p' && class_style.length == 0
+    if tag == 'p'
       # don't markup paragraphs explicitly unless necessary (i.e. there are id or class attributes)
       write("\n\n")
     else
-      write("\n\n#{tag}#{class_style}. ")
+      write("\n\n#{tag}. ")
     end
     start_capture(tag)
   end
@@ -79,13 +68,12 @@ class HTMLToConfluenceParser
   end
   
   def make_quicktag_start_pair(tag, wrapchar, attributes)
-    class_style = build_styles_ids_and_classes(attributes)
-    @skip_quicktag = ( tag == 'span' && class_style.length == 0 )
+    @skip_quicktag = ( tag == 'span')
     unless @skip_quicktag
       unless in_nested_quicktag?
         #write([" "]) 
       end
-      write(["#{wrapchar}#{class_style}"])
+      write(["#{wrapchar}"])
     end
     start_capture(tag)
   end
