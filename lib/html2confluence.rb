@@ -385,7 +385,7 @@ class HTMLToConfluenceParser
     output.gsub!(/(\n\s*){2,}/,"\n\n")
     output.gsub!(/bq. \n+(\w)/,'bq. \1')
     QUICKTAGS.values.uniq.each do |t|
-      output.gsub!(/ #{Regexp.escape(t)}\s+#{Regexp.escape(t)} /,' ') # removes empty quicktags
+      output.gsub!(/ #{Regexp.escape(t)}[ \t]+#{Regexp.escape(t)} /,' ') # removes empty quicktags
       #output.gsub!(/(\[?#{Regexp.escape(t)})(\w+)([^#{Regexp.escape(t)}]+)(\s+)(#{Regexp.escape(t)}\]?)/,'\1\2\3\5\4') # fixes trailing whitespace before closing quicktags
     end
     #output.squeeze!(' ')

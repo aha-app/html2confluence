@@ -77,6 +77,32 @@ h1. With +nice+ formatting.
     parser.feed(html)
     parser.to_wiki_markup.strip.should include(markup.strip)
   end
+  
+  it "should handle empty paragraphs" do
+    html = <<-END
+    <p>Previous</p><p><br></p><p><b>Scenario 4a: Existing deletes their ID</b><br>
+    <b>Given</b> I am an existing user</p>
+    END
+
+    markup = "Previous\n\n*Scenario 4a: Existing deletes their ID*\n*Given* I am an existing user"
+
+    parser = HTMLToConfluenceParser.new
+    parser.feed(html)
+    parser.to_wiki_markup.strip.should == markup
+  end
+  
+  it "should handle empty bold sections" do
+    html = <<-END
+    <p><b><br></b> <b>Scenario 4a: Existing deletes their ID</b><br>
+    <b>Given</b> I am an existing user</p>
+    END
+
+    markup = "*Scenario 4a: Existing deletes their ID*\n*Given* I am an existing user"
+
+    parser = HTMLToConfluenceParser.new
+    parser.feed(html)
+    parser.to_wiki_markup.strip.should == markup
+  end
 end
 
 
