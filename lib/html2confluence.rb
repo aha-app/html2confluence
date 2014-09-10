@@ -69,17 +69,25 @@ class HTMLToConfluenceParser
   
   def make_quicktag_start_pair(tag, wrapchar, attributes)
     @skip_quicktag = ( tag == 'span')
+    start_capture(tag)
+  end
+
+  def make_quicktag_end_pair(wrapchar)
+    content = stop_capture
+    
+    # Don't make quicktags with empty content. 
+    if content.join("").strip.empty?
+      write(content)
+      return
+    end
+    
     unless @skip_quicktag
       unless in_nested_quicktag?
         #write([" "]) 
       end
       write(["#{wrapchar}"])
     end
-    start_capture(tag)
-  end
-
-  def make_quicktag_end_pair(wrapchar)
-    stop_capture_and_write
+    write(content)
     write([wrapchar]) unless @skip_quicktag
     unless in_nested_quicktag?
       #write([" "]) 

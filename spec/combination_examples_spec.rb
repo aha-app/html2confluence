@@ -93,11 +93,12 @@ h1. With +nice+ formatting.
   
   it "should handle empty bold sections" do
     html = <<-END
+    <p>Previous line</p>
     <p><b><br></b> <b>Scenario 4a: Existing deletes their ID</b><br>
     <b>Given</b> I am an existing user</p>
     END
 
-    markup = "*Scenario 4a: Existing deletes their ID*\n*Given* I am an existing user"
+    markup = "Previous line\n\n*Scenario 4a: Existing deletes their ID*\n*Given* I am an existing user"
 
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
