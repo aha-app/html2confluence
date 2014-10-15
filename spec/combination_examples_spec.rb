@@ -104,6 +104,16 @@ h1. With +nice+ formatting.
     parser.feed(html)
     parser.to_wiki_markup.strip.should == markup
   end
+  
+  it "don't remove extra newlines" do
+    html = "<p><b>And</b> first line</p>\n\n<p><b><br></b></p><p><b>second line</b></p>\n\n"
+
+    markup = "*And* first line\n\n*second line*"
+
+    parser = HTMLToConfluenceParser.new
+    parser.feed(html)
+    parser.to_wiki_markup.strip.should == markup
+  end
 end
 
 
