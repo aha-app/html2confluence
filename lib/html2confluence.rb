@@ -377,7 +377,10 @@ class HTMLToConfluenceParser
     data.gsub!(/<blockquote>\s*(<br[^>]*>)?\s*<\/blockquote>/x,' ')
     
     # Fix unclosed <br>
-    data.gsub!(/<br>/, "<br/>")
+    data.gsub!(/<br[^>]*>/, "<br/>")
+    
+    # Fix unclosed <img>
+    data.gsub!(/(<img[^>]+)(?<!\/)>/, '\1 />')
     
     data
   end

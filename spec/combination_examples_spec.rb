@@ -105,10 +105,20 @@ h1. With +nice+ formatting.
     parser.to_wiki_markup.strip.should == markup
   end
   
-  it "don't remove extra newlines" do
+  it "doesn't remove extra newlines" do
     html = "<p><b>And</b> first line</p>\n\n<p><b><br></b></p><p><b>second line</b></p>\n\n"
 
     markup = "*And* first line\n\n*second line*"
+
+    parser = HTMLToConfluenceParser.new
+    parser.feed(html)
+    parser.to_wiki_markup.strip.should == markup
+  end
+  
+  it "handles unclosed img tags" do
+    html = "<div><img src='a source'></div>\n\n"
+
+    markup = "!a source!"
 
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
