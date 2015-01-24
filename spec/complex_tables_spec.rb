@@ -11,17 +11,14 @@ describe HTMLToConfluenceParser, "when running complex tables examples" do
 
     markup = <<-END
 |As a...|I would like...|Because...|
-|
-Student
+|Student
 or
-Teacher|There to be more candy|
-
-Candy is:
-
+\\\\
+Teacher|There to be more candy|Candy is:
+\\\\
 * Delicious
 * Shiny
-* Good for my teeth
-|
+* Good for my teeth|
     END
 
     parser = HTMLToConfluenceParser.new

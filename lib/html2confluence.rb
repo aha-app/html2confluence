@@ -304,7 +304,8 @@ class HTMLToConfluenceParser
   end
 
   def end_th
-    stop_capture_and_write
+    s = stop_capture
+    write(cleanup_table_cell(s))
   end  
 
   def start_td(attrs)
@@ -314,7 +315,12 @@ class HTMLToConfluenceParser
   end
 
   def end_td
-    stop_capture_and_write
+    s = stop_capture
+    write(cleanup_table_cell(s))
+  end
+  
+  def cleanup_table_cell(s)
+    [s.join("").strip.gsub(/\n{2,}/, "\n" + '\\\\\\' + "\n")]
   end
 
   def start_br(attrs)
