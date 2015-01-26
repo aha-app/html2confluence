@@ -26,6 +26,20 @@ Teacher|There to be more candy|Candy is:
     parser.to_wiki_markup.strip.should include(markup.strip)
   end
   
+   it "should handle table empty cells" do
+    html = <<-END
+    <table class="mce-item-table"><tbody><tr><td><p><br data-mce-bogus="1"></p></td><td>Empty</td><td><p><br data-mce-bogus="1"></p></td></tr></tbody></table>
+    END
+
+    markup = <<-END
+| |Empty| |
+    END
+
+    parser = HTMLToConfluenceParser.new
+    parser.feed(html)
+    parser.to_wiki_markup.strip.should include(markup.strip)
+  end
+  
 end
 
 
