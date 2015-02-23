@@ -129,6 +129,19 @@ h1. With +nice+ formatting.
     html = "<div>familiar with the XML<wbr>Http<wbr>Request Object</div>\n\n"
 
     markup = "familiar with the XMLHttpRequest Object"
+    parser = HTMLToConfluenceParser.new
+    parser.feed(html)
+    parser.to_wiki_markup.strip.should == markup
+    
+  end
+  
+  it "should handle unclosed tags" do
+    html = <<-END
+    <p>Previous line</p>
+    <hr>
+    END
+
+    markup = "Previous line\n\n---"
 
     parser = HTMLToConfluenceParser.new
     parser.feed(html)

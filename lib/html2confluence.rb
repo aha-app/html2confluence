@@ -391,6 +391,9 @@ class HTMLToConfluenceParser
     # Remove <wbr>
     data.gsub!(/<wbr[^>]*>/, "")
     
+    # Fix unclosed <hr>
+    data.gsub!(/<hr[^>]*>/, "<hr/>")
+    
     # Fix unclosed <img>
     data.gsub!(/(<img[^>]+)(?<!\/)>/, '\1 />')
     
