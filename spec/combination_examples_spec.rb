@@ -124,6 +124,16 @@ h1. With +nice+ formatting.
     parser.feed(html)
     parser.to_wiki_markup.strip.should == markup
   end
+  
+  it "handles wbr tags" do
+    html = "<div>familiar with the XML<wbr>Http<wbr>Request Object</div>\n\n"
+
+    markup = "familiar with the XMLHttpRequest Object"
+
+    parser = HTMLToConfluenceParser.new
+    parser.feed(html)
+    parser.to_wiki_markup.strip.should == markup
+  end
 end
 
 
