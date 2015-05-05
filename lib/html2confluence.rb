@@ -239,13 +239,23 @@ class HTMLToConfluenceParser
     end
   end
 
+  # Jira doesn't like it when there's space padding around images in links, like thumbnails.
+  # By checking to see if the link content is a single image, we can strip those out and preserve the link function
+  def link_content_filtering_out_images(content)
+    if content.join("").match(/\A\s*!(.+)!\s*\Z/)
+      ["!" + $1 + "!"]
+    else
+      content
+    end
+  end
+
   def end_a
     if self.a_href
       content = stop_capture
       if self.a_href.gsub(/^#/, "") == content.join("")
         write([self.a_href, "] "])
       else
-        write(content)
+        write(link_content_filtering_out_images(content))
         write(["|", self.a_href, "] "])
       end
 
