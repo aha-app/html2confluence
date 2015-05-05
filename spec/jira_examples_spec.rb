@@ -219,6 +219,26 @@ preformatted piece of text
     #puts RedCloth.new(@textile).to_html
   end
 
+  it "should convert images within a link" do
+    imagetarget = "https://example.com/image.jpg"
+    link = "https://example.com/index.html"
+    test_html = %{
+      <p>
+        <a href="#{link}" target="_blank">
+          <img src="#{imagetarget}"
+          alt=""
+          width="300" />
+        </a>
+      </p>
+    }
+
+    parser = HTMLToConfluenceParser.new
+    parser.feed test_html
+    @textile = parser.to_wiki_markup
+
+    @textile.should == "[!#{imagetarget}!|#{link}]"
+  end
+
   it "should convert heading tags" do
     @textile.should match(/^h1. Biggest heading/)
     @textile.should match(/^h2. Bigger heading/)
