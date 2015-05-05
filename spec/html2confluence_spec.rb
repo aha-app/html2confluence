@@ -225,6 +225,9 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   end
   
   it "should escape special characters" do
+    # This test currently fails. We would like it to pass, but only by escaping
+    # characters that would otherwise be mistaken for markup. It should not
+    # escape every instance of these characters.
     @textile.should include("\\# Not a list")
     @textile.should include("\\* Not a list")
     @textile.should include("\\- Not a list")
