@@ -1,5 +1,7 @@
 require 'rexml/document'
 
+require 'nokogiri' # For validating html from our editor
+
 # A class to convert HTML to textile. Based on the python parser
 # found at http://aftnn.org/content/code/html2textile/
 #
@@ -406,6 +408,14 @@ class HTMLToConfluenceParser
     
     # Fix unclosed <img>
     data.gsub!(/(<img[^>]+)(?<!\/)>/, '\1 />')
+
+    # Parse with nokogiri to ensure not tags are left unclosed
+    # Ensure a parsing error from Nokogiri can't stop processing to get better error from REXML
+    begin
+      validated_data = Nokogiri::HTML::fragment(data).to_xml
+      data = validated_data
+    rescue Exception => e
+    end
     
     data
   end
