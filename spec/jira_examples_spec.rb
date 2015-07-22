@@ -119,6 +119,9 @@ a &#8212; b</p>
 </tr>
 </tbody></table>
 
+<img src="https://somdomain.net/images/icons/emoticons/smile.gif">
+<img src="https://somdomain.net/images/icons/emoticons/warning.gif">
+<img src="/images/icons/emoticons/lightbulb.gif">
 
 <div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>preformatted piece of text
@@ -300,6 +303,12 @@ preformatted piece of text
     @textile.should include("||heading 1 ||heading 2 ||heading 3 ||")
     @textile.should include("|col A1 |col A2 |col A3 |")
     @textile.should include("|col B1 |col B2 |col B3 |")
+  end
+  
+  it "should convert emoji from jira" do
+    @textile.should include(":)")
+    @textile.should include("(!)")
+    @textile.should include("(off)")
   end
   
 end

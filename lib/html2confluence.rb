@@ -408,12 +408,35 @@ class HTMLToConfluenceParser
     
     # Fix unclosed <img>
     data.gsub!(/(<img[^>]+)(?<!\/)>/, '\1 />')
-
+    # Convert jira emoji
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/smile\.gif" \/>/, ":)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/sad\.gif" \/>/, ":(")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/tongue\.gif" \/>/, ":P")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/biggrin\.gif" \/>/, ":D")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/wink\.gif" \/>/, ";)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/thumbs_up\.gif" \/>/, "(y)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/thumbs_down\.gif" \/>/, "(n)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/information\.gif" \/>/, "(i)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/check\.gif" \/>/, "(/)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/error\.gif" \/>/, "(x)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/warning\.gif" \/>/, "(!)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/add\.gif" \/>/, "(+)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/forbidden\.gif" \/>/, "(-)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/help_16\.gif" \/>/, "(?)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/lightbulb_on\.gif" \/>/, "(on)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/lightbulb\.gif" \/>/, "(off)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/star_yellow\.gif" \/>/, "(*)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/star_red\.gif" \/>/, "(*r)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/star_green\.gif" \/>/, "(*g)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/star_blue\.gif" \/>/, "(*b)")
+    data.gsub!(/<img src="([\w.-_:\/]+|\/)images\/icons\/emoticons\/star_yellow\.gif" \/>/, "(*y)")
+    
     # Parse with nokogiri to ensure not tags are left unclosed
     # Ensure a parsing error from Nokogiri can't stop processing to get better error from REXML
     begin
       validated_data = Nokogiri::HTML::fragment(data).to_xml
-      data = validated_data
+      entityConverter = HTMLEntities.new
+      data = validated_data.gsub(/(&#\d+;)/) { |entity| entityConverter.encode(entityConverter.decode(entity), :named) }.gsub("&amp;", "&")
     rescue Exception => e
     end
     
