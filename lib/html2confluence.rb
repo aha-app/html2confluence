@@ -413,7 +413,9 @@ class HTMLToConfluenceParser
     # Ensure a parsing error from Nokogiri can't stop processing to get better error from REXML
     begin
       validated_data = Nokogiri::HTML::fragment(data).to_xml
-      data = validated_data
+      entityConverter = HTMLEntities.new
+      data = validated_data.gsub(/(&#\d+;)/) { |entity| entityConverter.encode(entityConverter.decode(entity), :named) }.gsub("&amp;", "&")
+      puts data
     rescue Exception => e
     end
     
