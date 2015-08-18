@@ -22,7 +22,7 @@ describe HTMLToConfluenceParser, "when running combination examples" do
     
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
-    parser.to_wiki_markup.strip.should include(markup.strip)
+    expect(parser.to_wiki_markup.strip).to include(markup.strip)
   end
 
    it "should match nested lists" do
@@ -61,7 +61,7 @@ h1. With +nice+ formatting.
 
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
-    parser.to_wiki_markup.strip.should include(markup.strip)
+    expect(parser.to_wiki_markup.strip).to include(markup.strip)
   end
   
   it "should match nested blockquotes" do
@@ -75,7 +75,7 @@ h1. With +nice+ formatting.
 
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
-    parser.to_wiki_markup.strip.should include(markup.strip)
+    expect(parser.to_wiki_markup.strip).to include(markup.strip)
   end
   
   it "should handle empty paragraphs" do
@@ -88,7 +88,7 @@ h1. With +nice+ formatting.
 
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
-    parser.to_wiki_markup.strip.should == markup
+    expect(parser.to_wiki_markup.strip).to eq(markup)
   end
   
   it "should handle empty bold sections" do
@@ -102,7 +102,7 @@ h1. With +nice+ formatting.
 
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
-    parser.to_wiki_markup.strip.should == markup
+    expect(parser.to_wiki_markup.strip).to eq(markup)
   end
   
   it "doesn't remove extra newlines" do
@@ -112,7 +112,7 @@ h1. With +nice+ formatting.
 
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
-    parser.to_wiki_markup.strip.should == markup
+    expect(parser.to_wiki_markup.strip).to eq(markup)
   end
   
   it "handles unclosed img tags" do
@@ -122,7 +122,7 @@ h1. With +nice+ formatting.
 
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
-    parser.to_wiki_markup.strip.should == markup
+    expect(parser.to_wiki_markup.strip).to eq(markup)
   end
   
   it "handles wbr tags" do
@@ -131,7 +131,7 @@ h1. With +nice+ formatting.
     markup = "familiar with the XMLHttpRequest Object"
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
-    parser.to_wiki_markup.strip.should == markup
+    expect(parser.to_wiki_markup.strip).to eq(markup)
     
   end
   
@@ -145,7 +145,7 @@ h1. With +nice+ formatting.
 
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
-    parser.to_wiki_markup.strip.should == markup
+    expect(parser.to_wiki_markup.strip).to eq(markup)
   end
 end
 

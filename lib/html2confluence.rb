@@ -412,8 +412,7 @@ class HTMLToConfluenceParser
     # Parse with nokogiri to ensure not tags are left unclosed
     # Ensure a parsing error from Nokogiri can't stop processing to get better error from REXML
     begin
-      validated_data = Nokogiri::HTML::fragment(data).to_xml
-      data = validated_data
+      data = Nokogiri::HTML::fragment(data).to_xml
     rescue Exception => e
     end
     

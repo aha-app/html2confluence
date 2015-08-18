@@ -23,7 +23,7 @@ Teacher|There to be more candy|Candy is:
 
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
-    parser.to_wiki_markup.strip.should include(markup.strip)
+    expect(parser.to_wiki_markup.strip).to include(markup.strip)
   end
   
    it "should handle table empty cells" do
@@ -37,7 +37,7 @@ Teacher|There to be more candy|Candy is:
 
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
-    parser.to_wiki_markup.strip.should include(markup.strip)
+    expect(parser.to_wiki_markup.strip).to include(markup.strip)
   end
   
 end
