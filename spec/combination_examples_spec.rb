@@ -30,16 +30,43 @@ describe HTMLToConfluenceParser, "when running combination examples" do
     <p>One line</p>
     <ul>
       <li>Nested</li>
-      <ol>
-        <li>bullets</li>
-        <li>go</li>
-        <li>here</li>
+      <li>
         <ol>
-          <li>dfsdf</li>
-          <li>dsfs</li>
+          <li>bullets</li>
+          <li>go</li>
+          <li>here</li>
+          <li>
+            <ol>
+              <li>dfsdf</li>
+              <li>dsfs</li>
+            </ol>
+          </li>
         </ol>
-      </ol>
+      </li>
       <li>Final bullet</li>
+    </ul>
+
+    <p>More stuff too</p>
+
+    <ul>
+      <li>In</li>
+      <li>
+        <ul>
+          <li>and</li>
+        </ul>
+      </li>
+      <li>out</li>
+      <li>
+        <ol>
+          <li>with numbers</li>
+          <li>
+            <ul>
+              <li>and sub-bullets</li>
+            </ul>
+          </li>
+        </ol>
+      </li>
+      <li>and back out</li>
     </ul>
     
     <h1>With <u>nice</u> formatting.</h1>
@@ -55,6 +82,15 @@ One line
 *## dfsdf 
 *## dsfs  
 * Final bullet 
+
+More stuff too
+
+* In 
+** and 
+* out 
+*# with numbers 
+*#* and sub-bullets  
+* and back out 
 
 h1. With +nice+ formatting.
     END

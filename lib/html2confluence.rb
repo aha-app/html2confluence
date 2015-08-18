@@ -421,7 +421,9 @@ class HTMLToConfluenceParser
   
   # Return the textile after processing
   def to_wiki_markup
-    fix_textile_whitespace!(result.join)
+    fix_textile_whitespace!(result.join).gsub(/\n(\*|#)+\s*\n(\*|#)+/) do |match|
+      "\n#{match.split("\n").last.squeeze(' ')}"
+    end
   end
   
   def fix_textile_whitespace!(output)
