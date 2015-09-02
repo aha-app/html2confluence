@@ -119,6 +119,9 @@ a &#8212; b</p>
 </tr>
 </tbody></table>
 
+<img src="https://somdomain.net/images/icons/emoticons/smile.gif">
+<img src="https://somdomain.net/images/icons/emoticons/warning.gif">
+<img src="/images/icons/emoticons/lightbulb.gif">
 
 <div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>preformatted piece of text
@@ -236,70 +239,76 @@ preformatted piece of text
     parser.feed test_html
     @textile = parser.to_wiki_markup
 
-    @textile.should == "[!#{imagetarget}!|#{link}]"
+    expect(@textile).to eq("[!#{imagetarget}!|#{link}]")
   end
 
   it "should convert heading tags" do
-    @textile.should match(/^h1. Biggest heading/)
-    @textile.should match(/^h2. Bigger heading/)
-    @textile.should match(/^h3. Big heading/)
-    @textile.should match(/^h4. Normal heading/)
-    @textile.should match(/^h5. Small heading/)
-    @textile.should match(/^h6. Smallest heading/)
+    expect(@textile).to match(/^h1. Biggest heading/)
+    expect(@textile).to match(/^h2. Bigger heading/)
+    expect(@textile).to match(/^h3. Big heading/)
+    expect(@textile).to match(/^h4. Normal heading/)
+    expect(@textile).to match(/^h5. Small heading/)
+    expect(@textile).to match(/^h6. Smallest heading/)
   end
   
   it "should convert inline formatting" do
-    @textile.should match(/^\*strong\*/)
-    @textile.should match(/^_emphasis_/)
-    @textile.should match(/^\?\?citation\?\?/)
-    @textile.should match(/^-deleted-/)
-    @textile.should match(/^\+inserted\+/)
-    @textile.should match(/^\^superscript\^/)
-    @textile.should match(/^\~subscript\~/)
-    @textile.should match(/^\{\{monospaced\}\}/)
+    expect(@textile).to match(/^\*strong\*/)
+    expect(@textile).to match(/^_emphasis_/)
+    expect(@textile).to match(/^\?\?citation\?\?/)
+    expect(@textile).to match(/^-deleted-/)
+    expect(@textile).to match(/^\+inserted\+/)
+    expect(@textile).to match(/^\^superscript\^/)
+    expect(@textile).to match(/^\~subscript\~/)
+    expect(@textile).to match(/^\{\{monospaced\}\}/)
   end
   
   it "should convert block quotes" do
-    @textile.should match(/^bq. Some block quoted text/)
-    @textile.should match(/^\{quote\}\s*here is quotable\s*content to be quoted\s*{quote}/)
+    expect(@textile).to match(/^bq. Some block quoted text/)
+    expect(@textile).to match(/^\{quote\}\s*here is quotable\s*content to be quoted\s*{quote}/)
   end
   
   it "should handle text color" do
-    @textile.should match(/^\{color\:red\}\s*look ma, red text!\s*\{color\}/)
+    expect(@textile).to match(/^\{color\:red\}\s*look ma, red text!\s*\{color\}/)
   end
   
   it "should convert horizontal rules" do
-    @textile.should match(/^---/)
+    expect(@textile).to match(/^---/)
   end
   
   it "should convert dashes" do
-    @textile.should match(/^a -- b/)
-    @textile.should match(/^a --- b/)
+    expect(@textile).to match(/^a -- b/)
+    expect(@textile).to match(/^a --- b/)
   end
   
   it "should convert links" do
-    @textile.should match(/^\[\#anchor\]/)
-    @textile.should match(/^\[http\:\/\/jira.atlassian.com\]/)
-    @textile.should match(/^\[Atlassian\|http\:\/\/atlassian.com\]/)
-    @textile.should match(/^\[file\:\/\/\/c\:\/temp\/foo.txt\]/)
+    expect(@textile).to match(/^\[\#anchor\]/)
+    expect(@textile).to match(/^\[http\:\/\/jira.atlassian.com\]/)
+    expect(@textile).to match(/^\[Atlassian\|http\:\/\/atlassian.com\]/)
+    expect(@textile).to match(/^\[file\:\/\/\/c\:\/temp\/foo.txt\]/)
   end
   
   it "should convert bullets" do
-    @textile.should match(/\* some\s*\* bullet\s*\*\* indented\s*\*\* bullets\s*\* points/)
-    @textile.should match(/- different\s*- bullet\s*- types/)
-    @textile.should match(/# a\s*# numbered\s*# list/)
-    @textile.should match(/# a\s*# numbered\s*#\* with\s*#\* nested\s*#\* bullet\s*# list/)
-    @textile.should match(/\* a\s*\* bulleted\s*\*# with\s*\*# nested\s*\*# numbered\s*\* list/)
+    expect(@textile).to match(/\* some\s*\* bullet\s*\*\* indented\s*\*\* bullets\s*\* points/)
+    expect(@textile).to match(/- different\s*- bullet\s*- types/)
+    expect(@textile).to match(/# a\s*# numbered\s*# list/)
+    expect(@textile).to match(/# a\s*# numbered\s*#\* with\s*#\* nested\s*#\* bullet\s*# list/)
+    expect(@textile).to match(/\* a\s*\* bulleted\s*\*# with\s*\*# nested\s*\*# numbered\s*\* list/)
   end
   
   it "should convert pre blocks" do
-    @textile.should match(/^\{noformat\}\s*preformatted piece of text\s*so \*no\* further _formatting_ is done here\s*\{noformat\}/)
+    expect(@textile).to match(/^\{noformat\}\s*preformatted piece of text\s*so \*no\* further _formatting_ is done here\s*\{noformat\}/)
   end
   
   it "should convert tables" do
-    @textile.should include("||heading 1 ||heading 2 ||heading 3 ||")
-    @textile.should include("|col A1 |col A2 |col A3 |")
-    @textile.should include("|col B1 |col B2 |col B3 |")
+    expect(@textile).to include("||heading 1 ||heading 2 ||heading 3 ||")
+    expect(@textile).to include("|col A1 |col A2 |col A3 |")
+    expect(@textile).to include("|col B1 |col B2 |col B3 |")
+  end
+
+  it "should convert emoji from jira" do
+    expect(@textile).to include(":)")
+    expect(@textile).to include("(!)")
+    expect(@textile).to include("(off)")
   end
   
 end

@@ -106,7 +106,8 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
       <strong>more bold text</strong><strong><br /></strong>
 
       <p>Some text with <u>underlining</u> is here.</p>
-      
+
+      <p>Æïœü</p>
 
       &copy; Copyright statement, let's see what happens to this&#8230; &euro; 100
 
@@ -129,112 +130,117 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   end
 
   it "should convert heading tags" do
-    @textile.should match(/^h1(\([^\)]+\))?\./)
+    expect(@textile).to match(/^h1(\([^\)]+\))?\./)
   end
   
   it "should convert paragraph tags" do
-    # We don't include paragraph classes @textile.should match(/^p(\([^\)]+\))?\./)
+    # We don't include paragraph classes expect(@textile).to match(/^p(\([^\)]+\))?\./)
   end
   
   it "should convert underline tags" do
-    @textile.should include("text with +underlining+ is here")
+    expect(@textile).to include("text with +underlining+ is here")
   end
   
   it "should not explicitly markup paragraphs unnecessarily" do
-    @textile.should_not include("p. test paragraph without id or class attributes")
+    expect(@textile).to_not include("p. test paragraph without id or class attributes")
   end
   
   it "should treat divs as block level elements, but ignore any attributes (effectively converting them to paragraphs)" do
-    @textile.should include("\n\nA note\n\nFollowed by another note\n\n")
+    expect(@textile).to include("\n\nA note\n\nFollowed by another note\n\n")
   end
   
   it "should not convert pointless spans to textile (i.e. without supported attributes)" do
-    @textile.should_not include("%a useless span%")
+    expect(@textile).to_not include("%a useless span%")
   end
 
   it "should convert class and id attributes" do
-    # We don't convert classes. @textile.should include("h1(story.title entry-title#post-312).")
+    # We don't convert classes. expect(@textile).to include("h1(story.title entry-title#post-312).")
   end
   
   it "should convert tables" do
-    @textile.should include("\n\n||heading 1 ||heading 2 || \n|value 1 |value 2 | \n")
+    expect(@textile).to include("\n\n||heading 1 ||heading 2 || \n|value 1 |value 2 | \n")
   end
   
   it "should convert tables with text immediately preceding the opening table tag" do
-    @textile.should include("Some text before a table\n\n||heading 1 ||heading 2 || \n|value 1 |value 2 | \n")
+    expect(@textile).to include("Some text before a table\n\n||heading 1 ||heading 2 || \n|value 1 |value 2 | \n")
   end
   
   it "should respect line breaks within block level elements" do
-    @textile.should include("\n# test 1 \n# test 2\nwith a line break in the middle")
+    expect(@textile).to include("\n# test 1 \n# test 2\nwith a line break in the middle")
   end
   
   it "should handle paragraphs nested within blockquote" do
-    @textile.should include("{quote}\n\nparagraph inside a blockquote\n\nanother paragraph inside a blockquote\n\n{quote}")
+    expect(@textile).to include("{quote}\n\nparagraph inside a blockquote\n\nanother paragraph inside a blockquote\n\n{quote}")
   end
   
   it "should retain leading and trailing whitespace within inline elements" do
-    @textile.should include("test *invalid* list item 1")
+    expect(@textile).to include("test *invalid* list item 1")
   end
   
   it "should respect trailing line break tags within other elements" do
-    @textile.should include("*Please apply online at:*\n[www.something.co.uk/careers|http://www.something.co.uk/careers]")
+    expect(@textile).to include("*Please apply online at:*\n[www.something.co.uk/careers|http://www.something.co.uk/careers]")
   end
   
   it "should handle nested inline elements" do
-    @textile.should include(" *_test emphasised bold text_* test")
+    expect(@textile).to include(" *_test emphasised bold text_* test")
   end
   
   it "should remove empty quicktags before returning" do
-    @textile.should_not include("*more bold text* *\n*")
+    expect(@textile).to_not include("*more bold text* *\n*")
   end  
   
   it "should remove unsupported elements (e.g. script)" do
-    @textile.should_not include('script')
+    expect(@textile).to_not include('script')
   end
   
   it "should remove unsupported attributes (i.e. everything but class and id)" do
-    @textile.should_not include('summary')
-    @textile.should_not include('a table with a caption')
-    @textile.should_not include('style')
-    @textile.should_not include('color:red;')
+    expect(@textile).to_not include('summary')
+    expect(@textile).to_not include('a table with a caption')
+    expect(@textile).to_not include('style')
+    expect(@textile).to_not include('color:red;')
   end
   
   it "should clean up multiple blank lines created by tolerant parsing before returning" do
-    @textile.should_not match(/(\n\n\s*){2,}/)
+    expect(@textile).to_not match(/(\n\n\s*){2,}/)
   end
   
   it "should keep entity references" do
-    @textile.should include("&copy;")
+    expect(@textile).to include("&copy;")
   end
   
   it "should output unknown named entity references" do
-    @textile.should include("&unknownref;")
+    expect(@textile).to include("&unknownref;")
   end  
   
   it "should convert numerical entity references to a utf-8 character" do
-    @textile.should include("…")
+    expect(@textile).to include("…")
+  end
+
+  it "should ignore entities that are already converted" do
+    expect(@textile).to include("Æïœü")
   end
   
   it "should ignore ampersands that are not part of an entity reference" do
-    @textile.should include("Hughes & Hughes")
+    expect(@textile).to include("Hughes & Hughes")
   end
   
   it "should retain whitespace surrounding entity references" do
-    @textile.should include("… &euro; 100")
-    @textile.should include("Something & something")
+    expect(@textile).to include("… &euro; 100")
+    expect(@textile).to include("Something & something")
   end
   
   it "should escape special characters" do
     # This test currently fails. We would like it to pass, but only by escaping
     # characters that would otherwise be mistaken for markup. It should not
     # escape every instance of these characters.
-    @textile.should include("\\# Not a list")
-    @textile.should include("\\* Not a list")
-    @textile.should include("\\- Not a list")
-    @textile.should include("\\*Not bold\\*")
-    @textile.should include("\\_Not a emph\\_")
-    @textile.should include("\\{Not curly\\}")
-    @textile.should include("\\|Not table")
+    pending 'only escape correct characters'
+    expect(@textile).to include("\\# Not a list")
+    expect(@textile).to include("\\* Not a list")
+    expect(@textile).to include("\\- Not a list")
+    expect(@textile).to include("\\*Not bold\\*")
+    expect(@textile).to include("\\_Not a emph\\_")
+    expect(@textile).to include("\\{Not curly\\}")
+    expect(@textile).to include("\\|Not table")
   end
   
 end
