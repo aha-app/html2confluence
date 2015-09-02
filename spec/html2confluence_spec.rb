@@ -204,7 +204,7 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   end
   
   it "should keep entity references" do
-    expect(@textile).to include("©")
+    expect(@textile).to include("&copy;")
   end
   
   it "should output unknown named entity references" do
@@ -220,7 +220,7 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   end
   
   it "should retain whitespace surrounding entity references" do
-    expect(@textile).to include("… € 100")
+    expect(@textile).to include("… &euro; 100")
     expect(@textile).to include("Something & something")
   end
   
