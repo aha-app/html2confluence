@@ -106,7 +106,8 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
       <strong>more bold text</strong><strong><br /></strong>
 
       <p>Some text with <u>underlining</u> is here.</p>
-      
+
+      <p>Æïœü</p>
 
       &copy; Copyright statement, let's see what happens to this&#8230; &euro; 100
 
@@ -213,6 +214,10 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   
   it "should convert numerical entity references to a utf-8 character" do
     expect(@textile).to include("…")
+  end
+
+  it "should ignore entities that are already converted" do
+    expect(@textile).to include("Æïœü")
   end
   
   it "should ignore ampersands that are not part of an entity reference" do
