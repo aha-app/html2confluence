@@ -50,54 +50,54 @@ a &#8212; b</p>
 <p><a name="anchorname"></a></p>
 
 <ul>
-	<li>some</li>
-	<li>bullet
-	<ul>
-		<li>indented</li>
-		<li>bullets</li>
-	</ul>
-	</li>
-	<li>points</li>
+  <li>some</li>
+  <li>bullet
+  <ul>
+    <li>indented</li>
+    <li>bullets</li>
+  </ul>
+  </li>
+  <li>points</li>
 </ul>
 
 
 <ul class="alternate" type="square">
-	<li>different</li>
-	<li>bullet</li>
-	<li>types</li>
+  <li>different</li>
+  <li>bullet</li>
+  <li>types</li>
 </ul>
 
 
 <ol>
-	<li>a</li>
-	<li>numbered</li>
-	<li>list</li>
+  <li>a</li>
+  <li>numbered</li>
+  <li>list</li>
 </ol>
 
 
 <ol>
-	<li>a</li>
-	<li>numbered
-	<ul>
-		<li>with</li>
-		<li>nested</li>
-		<li>bullet</li>
-	</ul>
-	</li>
-	<li>list</li>
+  <li>a</li>
+  <li>numbered
+  <ul>
+    <li>with</li>
+    <li>nested</li>
+    <li>bullet</li>
+  </ul>
+  </li>
+  <li>list</li>
 </ol>
 
 
 <ul>
-	<li>a</li>
-	<li>bulleted
-	<ol>
-		<li>with</li>
-		<li>nested</li>
-		<li>numbered</li>
-	</ol>
-	</li>
-	<li>list</li>
+  <li>a</li>
+  <li>bulleted
+  <ol>
+    <li>with</li>
+    <li>nested</li>
+    <li>numbered</li>
+  </ol>
+  </li>
+  <li>list</li>
 </ul>
 
 
@@ -122,6 +122,7 @@ a &#8212; b</p>
 <img src="https://somdomain.net/images/icons/emoticons/smile.gif">
 <img src="https://somdomain.net/images/icons/emoticons/warning.gif">
 <img src="/images/icons/emoticons/lightbulb.gif">
+<img src="https://bigaha.atlassian.net/images/icons/emoticons/check.png" />
 
 <div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
 <pre>preformatted piece of text
@@ -309,12 +310,7 @@ preformatted piece of text
     expect(@textile).to include(":)")
     expect(@textile).to include("(!)")
     expect(@textile).to include("(off)")
-  end
-  
-  it "should convert emoji from jira" do
-    @textile.should include(":)")
-    @textile.should include("(!)")
-    @textile.should include("(off)")
+    expect(@textile).to include("(/)")
   end
   
 end
