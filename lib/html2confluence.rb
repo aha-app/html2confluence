@@ -89,7 +89,7 @@ class HTMLToConfluenceParser
       end
       write(["#{wrapchar}"])
     end
-    write(content)
+    write(content.strip)
     write([wrapchar]) unless @skip_quicktag
     unless in_nested_quicktag?
       #write([" "]) 
