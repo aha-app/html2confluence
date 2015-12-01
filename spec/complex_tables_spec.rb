@@ -40,6 +40,25 @@ Teacher|There to be more candy|Candy is:
     expect(parser.to_wiki_markup.strip).to include(markup.strip)
   end
   
+   it "should handle pre in table empty cells" do
+    html = <<-END
+    <table><tbody><tr><td><pre>a</pre></td><td>d</td></tr><tr><td><pre>b</pre></td><td>c</td></tr></tbody></table>
+    END
+
+    markup = <<-END
+|{noformat}
+a
+{noformat} |d |
+|{noformat}
+b
+{noformat} |c |
+    END
+
+    parser = HTMLToConfluenceParser.new
+    parser.feed(html)
+    expect(parser.to_wiki_markup.strip).to include(markup.strip)
+  end
+  
 end
 
 
