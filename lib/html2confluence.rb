@@ -331,8 +331,8 @@ class HTMLToConfluenceParser
     write(cleanup_table_cell(s))
   end
   
-  def cleanup_table_cell(s = [])
-    clean_content = s.join("").strip.gsub(/\n{2,}/, "\n" + '\\\\\\' + "\n")
+  def cleanup_table_cell(s)
+    clean_content = (s || []).join("").strip.gsub(/\n{2,}/, "\n" + '\\\\\\' + "\n")
     # Don't allow a completely empty cell because that will look like a header.
     clean_content = " " if clean_content.empty?
     [clean_content]
