@@ -492,4 +492,8 @@ class HTMLToConfluenceParser
   def text(string)
     handle_data(string)
   end
+  
+  def comment(comment)
+    # Comments are ignored.
+  end
 end

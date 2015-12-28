@@ -183,6 +183,19 @@ h1. With +nice+ formatting.
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to eq(markup)
   end
+  
+  it "should handle HTML comments" do
+    html = <<-END
+    <p><!--?rh-implicit_p?--><span style=\"font-style: italic;\">A</span></p>
+    END
+
+    markup = "A"
+
+    parser = HTMLToConfluenceParser.new
+    parser.feed(html)
+    expect(parser.to_wiki_markup.strip).to eq(markup)
+  end
+  
 end
 
 
