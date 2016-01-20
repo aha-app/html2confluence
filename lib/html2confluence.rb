@@ -496,4 +496,8 @@ class HTMLToConfluenceParser
   def comment(comment)
     # Comments are ignored.
   end
+  
+  def cdata(data)
+    # CDATA is ignored.
+  end
 end
