@@ -2,22 +2,20 @@ require 'rexml/document'
 
 require 'nokogiri' # For validating html from our editor
 
-# A class to convert HTML to textile. Based on the python parser
+# A class to convert HTML to confluence markup. Based on the python parser
 # found at http://aftnn.org/content/code/html2textile/
-#
-# Read more at http://jystewart.net/process/2007/11/converting-html-to-textile-with-ruby
 #
 # Author::    James Stewart  (mailto:james@jystewart.net)
 # Copyright:: Copyright (c) 2007 James Stewart
 # License::   Distributes under the same terms as Ruby
 
 # This class is an implementation of an SGMLParser designed to convert
-# HTML to textile.
-# 
+# HTML to atlassian confluence wiki markup.
+#
 # Example usage:
-#   parser = HTMLToTextileParser.new
+#   parser = HTMLToConfluenceParser.new
 #   parser.feed(input_html)
-#   puts parser.to_textile
+#   puts parser.to_wiki_markup
 class HTMLToConfluenceParser
   
   attr_accessor :result

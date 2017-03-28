@@ -11,3 +11,13 @@ There are some JIRA/Confluence markup that we do not support:
 
 * The [mailto:] tag.
 * The {anchor:} tag.
+
+
+## Installation ##
+
+    $ gem build html2confluence.gemspec
+    $ gem install html2confluence-1.3.18.gem
+
+## Command line usage ##
+
+    $ ruby convert.rb /path/to/file.html
