@@ -113,6 +113,9 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
 
       An unknown named entity reference - &unknownref; 
 
+      <strike>strike 1</strike>
+      <del>strike 2</del>
+
       # Not a list
       * Not a list
       - Not a list
@@ -242,5 +245,11 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
     expect(@textile).to include("\\{Not curly\\}")
     expect(@textile).to include("\\|Not table")
   end
+  
+  it "should support strikethrough" do
+    expect(@textile).to include("-strike 1-")
+    expect(@textile).to include("-strike 2-")
+  end
+  
   
 end

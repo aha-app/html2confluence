@@ -147,7 +147,7 @@ class HTMLToConfluenceParser
   end
 
   PAIRS = { 'bq' => 'bq', 'p' => 'p' }
-  QUICKTAGS = { 'b' => '*', 'strong' => '*', 'del' => '-',
+  QUICKTAGS = { 'b' => '*', 'strong' => '*', 'del' => '-',  'strike' => '-',
     'i' => '_', 'ins' => '+', 'u' => '+', 'em' => '_', 'cite' => '??', 
     'sup' => '^', 'sub' => '~', 'code' => '@', 'span' => '%'}
   
