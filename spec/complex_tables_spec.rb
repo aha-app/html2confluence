@@ -47,11 +47,36 @@ Teacher|There to be more candy|Candy is:
 
     markup = <<-END
 |{noformat}
-a
-{noformat} |d |
+a{noformat} |d |
 |{noformat}
-b
-{noformat} |c |
+b{noformat} |c |
+    END
+
+    parser = HTMLToConfluenceParser.new
+    parser.feed(html)
+    expect(parser.to_wiki_markup.strip).to include(markup.strip)
+  end
+  
+   it "should handle pre in table" do
+    html = <<-END
+    <table><tbody>
+      <tr>
+        <td>A </td>
+        <td><tt>B</tt> </td>
+        <td>C </td>
+      </tr>
+      <tr>
+        <td>1 </td>
+        <td><pre>2</pre></td>
+        <td>3 </td>
+      </tr>
+    </tbody></table>
+    END
+
+    markup = <<-END
+|A |{{B}} |C | 
+|1 |{noformat}
+2{noformat} |3  |
     END
 
     parser = HTMLToConfluenceParser.new

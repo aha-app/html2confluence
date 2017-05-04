@@ -371,7 +371,7 @@ class HTMLToConfluenceParser
 
   def end_pre
     stop_capture_and_write
-    write("\n{noformat}")
+    write("{noformat}")
     @preserveWhitespace = false
   end
   
