@@ -273,7 +273,7 @@ preformatted piece of text
   end
   
   it "should convert horizontal rules" do
-    expect(@textile).to match(/^---/)
+    expect(@textile).to match(/^----/)
   end
   
   it "should convert dashes" do
