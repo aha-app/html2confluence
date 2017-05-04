@@ -177,7 +177,7 @@ h1. With +nice+ formatting.
     <hr>
     END
 
-    markup = "Previous line\n\n---"
+    markup = "Previous line\n\n----"
 
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
