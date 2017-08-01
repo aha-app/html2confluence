@@ -74,7 +74,6 @@ class HTMLToConfluenceParser
 
   def make_quicktag_end_pair(wrapchar)
     content = stop_capture
-    
     # Don't make quicktags with empty content. 
     if content.join("").strip.empty?
       write(content)
@@ -87,7 +86,7 @@ class HTMLToConfluenceParser
       end
       write(["#{wrapchar}"])
     end
-    write(content.collect(&:strip))
+    write(content)
     write([wrapchar]) unless @skip_quicktag
     unless in_nested_quicktag?
       #write([" "]) 
@@ -443,16 +442,15 @@ class HTMLToConfluenceParser
   
   # Return the textile after processing
   def to_wiki_markup
-    fix_textile_whitespace!(result.join).gsub(/\n(\*|#)+\s*\n(\*|#)+/) do |match|
-      "\n#{match.split("\n").last.squeeze(' ')}"
-    end
+    fix_textile_whitespace!(result.join)
   end
   
   def fix_textile_whitespace!(output)
-    # fixes multiple blank lines, blockquote indicator followed by blank lines, and trailing whitespace after quicktags
-    # modifies input string and also returns it
+    # fixes multiple blank lines
     output.gsub!(/(\n\s*){2,}/,"\n\n")
+    # fixes blockquote indicator followed by blank lines
     output.gsub!(/bq. \n+(\w)/,'bq. \1')
+    # fixes trailing whitespace after quicktags
     QUICKTAGS.values.uniq.each do |t|
       output.gsub!(/ #{Regexp.escape(t)}[ \t]+#{Regexp.escape(t)} /,' ') # removes empty quicktags
       #output.gsub!(/(\[?#{Regexp.escape(t)})(\w+)([^#{Regexp.escape(t)}]+)(\s+)(#{Regexp.escape(t)}\]?)/,'\1\2\3\5\4') # fixes trailing whitespace before closing quicktags
@@ -461,6 +459,14 @@ class HTMLToConfluenceParser
     #output.gsub!(/^[ \t]/,'') # leading whitespace
     #output.gsub!(/[ \t]$/,'') # trailing whitespace
     output.strip!
+    # fixes extra bullets generated when nesting list items
+    output.gsub!(/\n([\*|#]+)\s*\n([\*|#]+)/) do |match|
+      if $1 == $2
+        match
+      else
+        "\n#{match.split("\n").last}"
+      end.squeeze(' ')
+    end
     return output
   end
   
