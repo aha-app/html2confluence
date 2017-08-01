@@ -1,219 +1,217 @@
-# encoding: utf-8
-$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
-require 'html2confluence'
+require_relative 'spec_helper'
 
 describe HTMLToConfluenceParser, "when running JIRA examples" do
   
   before :all do
-    html = <<-END
-<h1><a name="Biggestheading"></a>Biggest heading</h1>
-<h2><a name="Biggerheading"></a>Bigger heading</h2>
-<h3><a name="Bigheading"></a>Big heading</h3>
-<h4><a name="Normalheading"></a>Normal heading</h4>
-<h5><a name="Smallheading"></a>Small heading</h5>
-<h6><a name="Smallestheading"></a>Smallest heading</h6>
+    html = <<~HTML
+      <h1><a name="Biggestheading"></a>Biggest heading</h1>
+      <h2><a name="Biggerheading"></a>Bigger heading</h2>
+      <h3><a name="Bigheading"></a>Big heading</h3>
+      <h4><a name="Normalheading"></a>Normal heading</h4>
+      <h5><a name="Smallheading"></a>Small heading</h5>
+      <h6><a name="Smallestheading"></a>Smallest heading</h6>
 
-<p><b>strong</b><br/>
-<em>emphasis</em><br/>
-<cite>citation</cite><br/>
-<del>deleted</del><br/>
-<ins>inserted</ins><br/>
-<sup>superscript</sup><br/>
-<sub>subscript</sub><br/>
-<tt>monospaced</tt></p>
-<blockquote>Some block quoted text</blockquote>
+      <p><b>strong</b><br/>
+      <em>emphasis</em><br/>
+      <cite>citation</cite><br/>
+      <del>deleted</del><br/>
+      <ins>inserted</ins><br/>
+      <sup>superscript</sup><br/>
+      <sub>subscript</sub><br/>
+      <tt>monospaced</tt></p>
+      <blockquote>Some block quoted text</blockquote>
 
-<blockquote>
-<p> here is quotable<br/>
- content to be quoted</p></blockquote>
+      <blockquote>
+      <p> here is quotable<br/>
+       content to be quoted</p></blockquote>
 
-<p><font color="red"><br/>
-    look ma, red text!</font></p>
+      <p><font color="red"><br/>
+          look ma, red text!</font></p>
 
-<p>a<br class="atl-forced-newline" />b</p>
+      <p>a<br class="atl-forced-newline" />b</p>
 
-<p>a<br/>
-b</p>
+      <p>a<br/>
+      b</p>
 
-<hr />
+      <hr />
 
-<p>a &#8211; b<br/>
-a &#8212; b</p>
+      <p>a &#8211; b<br/>
+      a &#8212; b</p>
 
-<p><a href="#anchor">anchor</a></p>
+      <p><a href="#anchor">anchor</a></p>
 
-<p><a href="http://jira.atlassian.com" class="external-link" rel="nofollow">http://jira.atlassian.com</a><br/>
-<a href="http://atlassian.com" class="external-link" rel="nofollow">Atlassian</a></p>
+      <p><a href="http://jira.atlassian.com" class="external-link" rel="nofollow">http://jira.atlassian.com</a><br/>
+      <a href="http://atlassian.com" class="external-link" rel="nofollow">Atlassian</a></p>
 
-<p><a href="file:///c:/temp/foo.txt" class="external-link" rel="nofollow">file:///c:/temp/foo.txt</a></p>
+      <p><a href="file:///c:/temp/foo.txt" class="external-link" rel="nofollow">file:///c:/temp/foo.txt</a></p>
 
-<p><a name="anchorname"></a></p>
+      <p><a name="anchorname"></a></p>
 
-<ul>
-  <li>some</li>
-  <li>bullet
-  <ul>
-    <li>indented</li>
-    <li>bullets</li>
-  </ul>
-  </li>
-  <li>points</li>
-</ul>
-
-
-<ul class="alternate" type="square">
-  <li>different</li>
-  <li>bullet</li>
-  <li>types</li>
-</ul>
+      <ul>
+        <li>some</li>
+        <li>bullet
+        <ul>
+          <li>indented</li>
+          <li>bullets</li>
+        </ul>
+        </li>
+        <li>points</li>
+      </ul>
 
 
-<ol>
-  <li>a</li>
-  <li>numbered</li>
-  <li>list</li>
-</ol>
+      <ul class="alternate" type="square">
+        <li>different</li>
+        <li>bullet</li>
+        <li>types</li>
+      </ul>
 
 
-<ol>
-  <li>a</li>
-  <li>numbered
-  <ul>
-    <li>with</li>
-    <li>nested</li>
-    <li>bullet</li>
-  </ul>
-  </li>
-  <li>list</li>
-</ol>
+      <ol>
+        <li>a</li>
+        <li>numbered</li>
+        <li>list</li>
+      </ol>
 
 
-<ul>
-  <li>a</li>
-  <li>bulleted
-  <ol>
-    <li>with</li>
-    <li>nested</li>
-    <li>numbered</li>
-  </ol>
-  </li>
-  <li>list</li>
-</ul>
+      <ol>
+        <li>a</li>
+        <li>numbered
+        <ul>
+          <li>with</li>
+          <li>nested</li>
+          <li>bullet</li>
+        </ul>
+        </li>
+        <li>list</li>
+      </ol>
 
 
-<table class='confluenceTable'><tbody>
-<tr>
-<th class='confluenceTh'>heading 1</th>
-<th class='confluenceTh'>heading 2</th>
-<th class='confluenceTh'>heading 3</th>
-</tr>
-<tr>
-<td class='confluenceTd'>col A1</td>
-<td class='confluenceTd'>col A2</td>
-<td class='confluenceTd'>col A3</td>
-</tr>
-<tr>
-<td class='confluenceTd'>col B1</td>
-<td class='confluenceTd'>col B2</td>
-<td class='confluenceTd'>col B3</td>
-</tr>
-</tbody></table>
+      <ul>
+        <li>a</li>
+        <li>bulleted
+        <ol>
+          <li>with</li>
+          <li>nested</li>
+          <li>numbered</li>
+        </ol>
+        </li>
+        <li>list</li>
+      </ul>
 
-<img src="https://somdomain.net/images/icons/emoticons/smile.gif">
-<img src="https://somdomain.net/images/icons/emoticons/warning.gif">
-<img src="/images/icons/emoticons/lightbulb.gif">
-<img src="https://bigaha.atlassian.net/images/icons/emoticons/check.png" />
 
-<div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
-<pre>preformatted piece of text
- so *no* further _formatting_ is done here
-</pre>
-</div></div>
-    END
-    
-    markup = <<-END
-  h1. Biggest heading
-h2. Bigger heading
-h3. Big heading
-h4. Normal heading
-h5. Small heading
-h6. Smallest heading
+      <table class='confluenceTable'><tbody>
+      <tr>
+      <th class='confluenceTh'>heading 1</th>
+      <th class='confluenceTh'>heading 2</th>
+      <th class='confluenceTh'>heading 3</th>
+      </tr>
+      <tr>
+      <td class='confluenceTd'>col A1</td>
+      <td class='confluenceTd'>col A2</td>
+      <td class='confluenceTd'>col A3</td>
+      </tr>
+      <tr>
+      <td class='confluenceTd'>col B1</td>
+      <td class='confluenceTd'>col B2</td>
+      <td class='confluenceTd'>col B3</td>
+      </tr>
+      </tbody></table>
 
-*strong*
-_emphasis_
-??citation??
--deleted-
-+inserted+
-^superscript^
-~subscript~
-{{monospaced}}
-bq. Some block quoted text
+      <img src="https://somdomain.net/images/icons/emoticons/smile.gif">
+      <img src="https://somdomain.net/images/icons/emoticons/warning.gif">
+      <img src="/images/icons/emoticons/lightbulb.gif">
+      <img src="https://bigaha.atlassian.net/images/icons/emoticons/check.png" />
 
-{quote}
- here is quotable
- content to be quoted
-{quote}
+      <div class="preformatted panel" style="border-width: 1px;"><div class="preformattedContent panelContent">
+      <pre>preformatted piece of text
+       so *no* further _formatting_ is done here
+      </pre>
+      </div></div>
+    HTML
+          
+    markup = <<~MARKUP
+      h1. Biggest heading
+      h2. Bigger heading
+      h3. Big heading
+      h4. Normal heading
+      h5. Small heading
+      h6. Smallest heading
 
-{color:red}
-    look ma, red text!
-{color}
+      *strong*
+      _emphasis_
+      ??citation??
+      -deleted-
+      +inserted+
+      ^superscript^
+      ~subscript~
+      {{monospaced}}
+      bq. Some block quoted text
 
-a\\b
+      {quote}
+       here is quotable
+       content to be quoted
+      {quote}
 
-a
-b
+      {color:red}
+          look ma, red text!
+      {color}
 
-----
+      a\\b
 
-a -- b
-a --- b
+      a
+      b
 
-[#anchor]
+      ----
 
-[http://jira.atlassian.com]
-[Atlassian|http://atlassian.com]
+      a -- b
+      a --- b
 
-[file:///c:/temp/foo.txt]
+      [#anchor]
 
-{anchor:anchorname}
+      [http://jira.atlassian.com]
+      [Atlassian|http://atlassian.com]
 
-* some
-* bullet
-** indented
-** bullets
-* points
+      [file:///c:/temp/foo.txt]
 
-- different
-- bullet
-- types
+      {anchor:anchorname}
 
-# a
-# numbered
-# list
+      * some
+      * bullet
+      ** indented
+      ** bullets
+      * points
 
-# a
-# numbered
-#* with
-#* nested
-#* bullet
-# list
+      - different
+      - bullet
+      - types
 
-* a
-* bulleted
-*# with
-*# nested
-*# numbered
-* list
+      # a
+      # numbered
+      # list
 
-||heading 1||heading 2||heading 3||
-|col A1|col A2|col A3|
-|col B1|col B2|col B3|
+      # a
+      # numbered
+      #* with
+      #* nested
+      #* bullet
+      # list
 
-{noformat}
-preformatted piece of text
- so *no* further _formatting_ is done here
-{noformat}
-    END
+      * a
+      * bulleted
+      *# with
+      *# nested
+      *# numbered
+      * list
+
+      ||heading 1||heading 2||heading 3||
+      |col A1|col A2|col A3|
+      |col B1|col B2|col B3|
+
+      {noformat}
+      preformatted piece of text
+       so *no* further _formatting_ is done here
+      {noformat}
+    MARKUP
     
     
     parser = HTMLToConfluenceParser.new
