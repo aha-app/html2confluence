@@ -147,7 +147,7 @@ class HTMLToConfluenceParser
   PAIRS = { 'bq' => 'bq', 'p' => 'p' }
   QUICKTAGS = { 'b' => '*', 'strong' => '*', 'del' => '-',  'strike' => '-',
     'i' => '_', 'ins' => '+', 'u' => '+', 'em' => '_', 'cite' => '??', 
-    'sup' => '^', 'sub' => '~', 'code' => '@'}
+    'sup' => '^', 'sub' => '~'}
   
   PAIRS.each do |key, value|
     define_method "start_#{key}" do |attributes|
@@ -362,6 +362,17 @@ class HTMLToConfluenceParser
       write("bq. ")
       write(s)
     end
+  end
+
+  def start_code(attrs)
+    @preserveWhitespace = true
+    write("{code}")
+  end
+
+  def end_code
+    stop_capture_and_write
+    write("{code}")
+    @preserveWhitespace = false
   end
   
   def start_pre(attrs)
