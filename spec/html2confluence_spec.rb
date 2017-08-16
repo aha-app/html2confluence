@@ -109,6 +109,8 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
 
       <p>Æïœü</p>
 
+      <code>some_good_code</code>
+
       &copy; Copyright statement, let's see what happens to this&#8230; &euro; 100
 
       An unknown named entity reference - &unknownref; 
@@ -250,6 +252,8 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
     expect(@textile).to include("-strike 1-")
     expect(@textile).to include("-strike 2-")
   end
-  
-  
+
+  it "should transform code" do
+    expect(@textile).to include("{code}some_good_code{code}")
+  end
 end

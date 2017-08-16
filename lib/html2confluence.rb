@@ -363,6 +363,17 @@ class HTMLToConfluenceParser
       write(s)
     end
   end
+
+  def start_code(attrs)
+    @preserveWhitespace = true
+    write("{code}")
+  end
+
+  def end_code
+    stop_capture_and_write
+    write("{code}")
+    @preserveWhitespace = false
+  end
   
   def start_pre(attrs)
     @preserveWhitespace = true
