@@ -105,6 +105,8 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
         <p>Some text with <u>underlining</u> is here.</p>
 
         <p>Æïœü</p>
+        
+        <code>some_good_code</code>
 
         &copy; Copyright statement, let's see what happens to this&#8230; &euro; 100
 
@@ -242,6 +244,10 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   it "should support strikethrough" do
     expect(html).to include_markup("-strike 1-")
     expect(html).to include_markup("-strike 2-")
+  end
+
+  it "should transform code" do
+    expect(@textile).to include("{code}some_good_code{code}")
   end
   
 end
