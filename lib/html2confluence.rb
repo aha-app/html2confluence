@@ -44,10 +44,9 @@ class HTMLToConfluenceParser
   
   # Escape any special characters.
   def escape_special_characters(s)
-    return s
     # Escaping is disabled now since it caused more problems that not having 
     # it. The insertion of unecessary escaping was annoying for JIRA users.
-    s.to_s.gsub(/[*#+\-_{}|]/) do |s|
+    s.to_s.gsub(/[*#+\-_{}|!]/) do |s|
       "\\#{s}"
     end
   end
@@ -125,7 +124,7 @@ class HTMLToConfluenceParser
       write(data)
     else
       data ||= ""
-      data = normalise_space(escape_special_characters(data))
+      data = normalise_space(data)
       if @last_write[-1] =~ /\s/
         data = data.lstrip # Collapse whitespace if the previous character was whitespace.
       end
@@ -499,6 +498,7 @@ class HTMLToConfluenceParser
   end
   
   def text(string)
+    string = escape_special_characters(string) unless @preserveWhitespace
     handle_data(string)
   end
   
