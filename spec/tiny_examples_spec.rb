@@ -1,18 +1,40 @@
 require_relative 'spec_helper'
 
-describe HTMLToConfluenceParser, "when consuming TinyMCE generated HTML" do
+describe HTMLToConfluenceParser do
 
-  context "edge case with nested formats with spans and &nbsp;" do
+  context "handling nested formats with spans and &nbsp;" do
 
-    it "should handle nested formatting" do
+    it "should handle word-embedded nested formatting" do
       html = <<~HTML
-        test<i>test<b>test</b></i>
+        one<i>two<b>three</b>four</i>five
       HTML
-
       markup = <<~MARKUP
-        test_test*test*_
+        one{_}two{*}three{*}four{_}five
       MARKUP
-
+      expect(html).to match_markup(markup)
+      
+      html = <<~HTML
+        one<i> two<b> three </b>four </i>five
+      HTML
+      markup = <<~MARKUP
+        one{_} two{*} three {*}four {_}five
+      MARKUP
+      expect(html).to match_markup(markup)
+      
+      html = <<~HTML
+        one <i>two <b>three</b> four</i> five
+      HTML
+      markup = <<~MARKUP
+        one _two *three* four_ five
+      MARKUP
+      expect(html).to match_markup(markup)
+      
+      html = <<~HTML
+        one <i> two <b> three </b> four </i> five
+      HTML
+      markup = <<~MARKUP
+        one _ two * three * four _ five
+      MARKUP
       expect(html).to match_markup(markup)
     end
 
@@ -40,15 +62,29 @@ describe HTMLToConfluenceParser, "when consuming TinyMCE generated HTML" do
       expect(html).to match_markup(markup)
     end
 
-    it "should handle trailing %nbsp; inside formats" do
+    it "should handle trailing %nbsp; inside formats", pending: true do
       html = <<~HTML
-        <b>test&nbsp;</b>
+        <b>test&nbsp;</b>test
       HTML
-
       markup = <<~MARKUP
-        *test *
+        *test* test
       MARKUP
-
+      expect(html).to match_markup(markup)
+      
+      html = <<~HTML
+        <b>test&nbsp;</b> test
+      HTML
+      markup = <<~MARKUP
+        *test*  test
+      MARKUP
+      expect(html).to match_markup(markup)
+      
+      html = <<~HTML
+        test <b>&nbsp;test</b>
+      HTML
+      markup = <<~MARKUP
+        test  *test*
+      MARKUP
       expect(html).to match_markup(markup)
     end
 
@@ -59,18 +95,6 @@ describe HTMLToConfluenceParser, "when consuming TinyMCE generated HTML" do
 
       markup = <<~MARKUP
         *test*
-      MARKUP
-
-      expect(html).to match_markup(markup)
-    end
-
-    it "should handle consecutive format-delineated spaces" do
-      html = <<~HTML
-        <b>test&nbsp;</b> test
-      HTML
-
-      markup = <<~MARKUP
-        *test * test
       MARKUP
 
       expect(html).to match_markup(markup)
@@ -90,52 +114,36 @@ describe HTMLToConfluenceParser, "when consuming TinyMCE generated HTML" do
 
   end
 
-  context "with empty li's" do
-
-    it "should preserve leading empty li's" do
-      html = <<~HTML
-        <ul>
-          <li></li>
-          <li>test</li>
-          <li>test</li>
-        </ul>
-      HTML
-
-      markup = "*  \n* test \n* test "
-
-      expect(html).to match_markup(markup)
-    end
-
-
-    it "should preserve inner empty li's" do
-      html = <<~HTML
-        <ul>
-          <li>test</li>
-          <li></li>
-          <li>test</li>
-        </ul>
-      HTML
-
-      markup = "* test \n* \n* test "
-
-      expect(html).to match_markup(markup)
-    end
-
-
-    it "should preserve trailing empty li's" do
-      html = <<~HTML
-        <ul>
-          <li>test</li>
-          <li>test</li>
-          <li></li>
-        </ul>
-      HTML
-
-      markup = "* test \n* test \n* "
-
-      expect(html).to match_markup(markup)
-    end
-
+  it "should preserve empty li's" do
+    html = <<~HTML
+      <ul>
+        <li></li>
+        <li>test</li>
+        <li>test</li>
+      </ul>
+    HTML
+    markup = "* \n* test\n* test"
+    expect(html).to match_markup(markup)
+    
+    html = <<~HTML
+      <ul>
+        <li>test</li>
+        <li></li>
+        <li>test</li>
+      </ul>
+    HTML
+    markup = "* test\n* \n* test"
+    expect(html).to match_markup(markup)
+    
+    html = <<~HTML
+      <ul>
+        <li>test</li>
+        <li>test</li>
+        <li></li>
+      </ul>
+    HTML
+    markup = "* test\n* test\n*"
+    expect(html).to match_markup(markup)
   end
 
   context "formatting within tables" do
@@ -308,6 +316,22 @@ describe HTMLToConfluenceParser, "when consuming TinyMCE generated HTML" do
       expect(html).to match_markup(markup)
     end
 
+  end
+  
+  it "should convert emoji images to literals" do
+    html = <<~HTML
+      <img src="https://somdomain.net/images/icons/emoticons/smile.gif">
+      <img src="https://somdomain.net/images/icons/emoticons/warning.gif">
+      <img src="/images/icons/emoticons/lightbulb.gif">
+      <img src="https://bigaha.atlassian.net/images/icons/emoticons/check.png" />
+    HTML
+    markup = <<~MARKUP
+      :)
+      (!)
+      (off)
+      (/)
+    MARKUP
+    expect(html).to match_markup(markup)
   end
 
 end

@@ -2,4 +2,5 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'pry'
+gem 'pry'; require 'pry'
+gem 'clipboard'; require 'clipboard'

@@ -15,9 +15,10 @@ module MarkupHelpers
   module_function
   
   def html_to_markup(html)
-    parser = HTMLToConfluenceParser.new
-    parser.feed(html)
-    parser.to_wiki_markup
+    # parser = HTMLToConfluenceParser.new
+    # parser.feed(html)
+    # parser.to_wiki_markup
+    Walker.new(html).convert
   end
   
   def indent(markup)

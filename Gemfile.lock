@@ -1,18 +1,19 @@
 PATH
   remote: .
   specs:
-    html2confluence (1.3.21)
+    html2confluence (1.3.23)
       nokogiri
 
 GEM
   remote: https://rubygems.org/
   specs:
+    clipboard (1.1.1)
     coderay (1.1.1)
     diff-lcs (1.3)
     method_source (0.8.2)
-    mini_portile2 (2.1.0)
-    nokogiri (1.7.2)
-      mini_portile2 (~> 2.1.0)
+    mini_portile2 (2.2.0)
+    nokogiri (1.8.0)
+      mini_portile2 (~> 2.2.0)
     pry (0.10.4)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -36,6 +37,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  clipboard
   html2confluence!
   pry
   rspec

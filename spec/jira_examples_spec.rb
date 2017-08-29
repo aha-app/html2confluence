@@ -2,8 +2,8 @@ require_relative 'spec_helper'
 
 describe HTMLToConfluenceParser, "when running JIRA examples" do
   
-  before :all do
-    html = <<~HTML
+  let(:html) do
+    <<~HTML
       <h1><a name="Biggestheading"></a>Biggest heading</h1>
       <h2><a name="Biggerheading"></a>Bigger heading</h2>
       <h3><a name="Bigheading"></a>Big heading</h3>
@@ -128,8 +128,10 @@ describe HTMLToConfluenceParser, "when running JIRA examples" do
       </pre>
       </div></div>
     HTML
-          
-    markup = <<~MARKUP
+  end
+  
+  let(:markup) do
+    <<~MARKUP
       h1. Biggest heading
       h2. Bigger heading
       h3. Big heading
@@ -212,13 +214,6 @@ describe HTMLToConfluenceParser, "when running JIRA examples" do
        so *no* further _formatting_ is done here
       {noformat}
     MARKUP
-    
-    
-    parser = HTMLToConfluenceParser.new
-    parser.feed(html)
-    @textile = parser.to_wiki_markup
-    #puts @textile
-    #puts RedCloth.new(@textile).to_html
   end
 
   it "should convert images within a link" do
@@ -242,73 +237,73 @@ describe HTMLToConfluenceParser, "when running JIRA examples" do
   end
 
   it "should convert heading tags" do
-    expect(@textile).to match(/^h1. Biggest heading/)
-    expect(@textile).to match(/^h2. Bigger heading/)
-    expect(@textile).to match(/^h3. Big heading/)
-    expect(@textile).to match(/^h4. Normal heading/)
-    expect(@textile).to match(/^h5. Small heading/)
-    expect(@textile).to match(/^h6. Smallest heading/)
+    expect(html).to match_markup(/^h1. Biggest heading/)
+    expect(html).to match_markup(/^h2. Bigger heading/)
+    expect(html).to match_markup(/^h3. Big heading/)
+    expect(html).to match_markup(/^h4. Normal heading/)
+    expect(html).to match_markup(/^h5. Small heading/)
+    expect(html).to match_markup(/^h6. Smallest heading/)
   end
   
   it "should convert inline formatting" do
-    expect(@textile).to match(/^\*strong\*/)
-    expect(@textile).to match(/^_emphasis_/)
-    expect(@textile).to match(/^\?\?citation\?\?/)
-    expect(@textile).to match(/^-deleted-/)
-    expect(@textile).to match(/^\+inserted\+/)
-    expect(@textile).to match(/^\^superscript\^/)
-    expect(@textile).to match(/^\~subscript\~/)
-    expect(@textile).to match(/^\{\{monospaced\}\}/)
+    expect(html).to match_markup(/\*strong\*/)
+    expect(html).to match_markup(/_emphasis_/)
+    expect(html).to match_markup(/\?\?citation\?\?/)
+    expect(html).to match_markup(/-deleted-/)
+    expect(html).to match_markup(/\+inserted\+/)
+    expect(html).to match_markup(/\^superscript\^/)
+    expect(html).to match_markup(/\~subscript\~/)
+    expect(html).to match_markup(/\{\{monospaced\}\}/)
   end
   
   it "should convert block quotes" do
-    expect(@textile).to match(/^bq. Some block quoted text/)
-    expect(@textile).to match(/^\{quote\}\s*here is quotable\s*content to be quoted\s*{quote}/)
+    expect(html).to match_markup(/^bq. Some block quoted text/)
+    expect(html).to match_markup(/^\{quote\}\s*here is quotable\s*content to be quoted\s*{quote}/)
   end
   
   it "should handle text color" do
-    expect(@textile).to match(/^\{color\:red\}\s*look ma, red text!\s*\{color\}/)
+    expect(html).to match_markup(/^\{color\:red\}\s*look ma, red text!\s*\{color\}/)
   end
   
   it "should convert horizontal rules" do
-    expect(@textile).to match(/^----/)
+    expect(html).to match_markup(/^----/)
   end
   
   it "should convert dashes" do
-    expect(@textile).to match(/^a -- b/)
-    expect(@textile).to match(/^a --- b/)
+    expect(html).to match_markup(/^a -- b/)
+    expect(html).to match_markup(/^a --- b/)
   end
   
   it "should convert links" do
-    expect(@textile).to match(/^\[\#anchor\]/)
-    expect(@textile).to match(/^\[http\:\/\/jira.atlassian.com\]/)
-    expect(@textile).to match(/^\[Atlassian\|http\:\/\/atlassian.com\]/)
-    expect(@textile).to match(/^\[file\:\/\/\/c\:\/temp\/foo.txt\]/)
+    expect(html).to match_markup(/^\[\#anchor\]/)
+    expect(html).to match_markup(/^\[http\:\/\/jira.atlassian.com\]/)
+    expect(html).to match_markup(/^\[Atlassian\|http\:\/\/atlassian.com\]/)
+    expect(html).to match_markup(/^\[file\:\/\/\/c\:\/temp\/foo.txt\]/)
   end
   
   it "should convert bullets" do
-    expect(@textile).to match(/\* some\s*\* bullet\s*\*\* indented\s*\*\* bullets\s*\* points/)
-    expect(@textile).to match(/- different\s*- bullet\s*- types/)
-    expect(@textile).to match(/# a\s*# numbered\s*# list/)
-    expect(@textile).to match(/# a\s*# numbered\s*#\* with\s*#\* nested\s*#\* bullet\s*# list/)
-    expect(@textile).to match(/\* a\s*\* bulleted\s*\*# with\s*\*# nested\s*\*# numbered\s*\* list/)
+    expect(html).to match_markup(/\* some\s*\* bullet\s*\*\* indented\s*\*\* bullets\s*\* points/)
+    expect(html).to match_markup(/- different\s*- bullet\s*- types/)
+    expect(html).to match_markup(/# a\s*# numbered\s*# list/)
+    expect(html).to match_markup(/# a\s*# numbered\s*#\* with\s*#\* nested\s*#\* bullet\s*# list/)
+    expect(html).to match_markup(/\* a\s*\* bulleted\s*\*# with\s*\*# nested\s*\*# numbered\s*\* list/)
   end
   
   it "should convert pre blocks" do
-    expect(@textile).to match(/^\{noformat\}\s*preformatted piece of text\s*so \*no\* further _formatting_ is done here\s*\{noformat\}/)
+    expect(html).to match_markup(/^\{noformat\}\s*preformatted piece of text\s*so \*no\* further _formatting_ is done here\s*\{noformat\}/)
   end
   
   it "should convert tables" do
-    expect(@textile).to include("||heading 1 ||heading 2 ||heading 3 ||")
-    expect(@textile).to include("|col A1 |col A2 |col A3 |")
-    expect(@textile).to include("|col B1 |col B2 |col B3 |")
+    expect(html).to include_markup("||heading 1 ||heading 2 ||heading 3 ||")
+    expect(html).to include_markup("|col A1 |col A2 |col A3 |")
+    expect(html).to include_markup("|col B1 |col B2 |col B3 |")
   end
 
   it "should convert emoji from jira" do
-    expect(@textile).to include(":)")
-    expect(@textile).to include("(!)")
-    expect(@textile).to include("(off)")
-    expect(@textile).to include("(/)")
+    expect(html).to include_markup(":)")
+    expect(html).to include_markup("(!)")
+    expect(html).to include_markup("(off)")
+    expect(html).to include_markup("(/)")
   end
   
 end

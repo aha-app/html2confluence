@@ -1,5 +1,7 @@
 require 'rexml/document'
 
+require 'walker'
+
 require 'nokogiri' # For validating html from our editor
 
 # A class to convert HTML to confluence markup. Based on the python parser
@@ -84,13 +86,23 @@ class HTMLToConfluenceParser
       unless in_nested_quicktag?
         #write([" "]) 
       end
-      write(["#{wrapchar}"])
+      write_quicktag_wrapchar(wrapchar)
     end
     write(content)
-    write([wrapchar]) unless @skip_quicktag
+    write_quicktag_wrapchar(wrapchar) unless @skip_quicktag
     unless in_nested_quicktag?
       #write([" "]) 
     end
+  end
+  
+  def write_quicktag_wrapchar(wrapchar)
+    write([
+      if @last_write[-1] =~ /\s/
+        "#{wrapchar}"
+      else
+        "{#{wrapchar}}"
+      end
+    ])
   end
   
   def in_nested_quicktag?
@@ -148,23 +160,23 @@ class HTMLToConfluenceParser
     'i' => '_', 'ins' => '+', 'u' => '+', 'em' => '_', 'cite' => '??', 
     'sup' => '^', 'sub' => '~'}
   
-  PAIRS.each do |key, value|
-    define_method "start_#{key}" do |attributes|
-      make_block_start_pair(value, attributes)
+  PAIRS.each do |node, markup|
+    define_method "start_#{node}" do |attributes|
+      make_block_start_pair(markup, attributes)
     end
     
-    define_method "end_#{key}" do
+    define_method "end_#{node}" do
       make_block_end_pair
     end
   end
   
-  QUICKTAGS.each do |key, value|
-    define_method "start_#{key}" do |attributes|
-      make_quicktag_start_pair(key, value, attributes)
+  QUICKTAGS.each do |node, wrapchar|
+    define_method "start_#{node}" do |attributes|
+      make_quicktag_start_pair(node, wrapchar, attributes)
     end
     
-    define_method "end_#{key}" do
-      make_quicktag_end_pair(value)
+    define_method "end_#{node}" do
+      make_quicktag_end_pair(wrapchar)
     end
   end
   
@@ -402,7 +414,7 @@ class HTMLToConfluenceParser
     data.gsub!(/&(mdash|#8212);/,'---')
     data.gsub!(/&(ndash|#8211);/,'--')
     
-    # remove empty blockquotes and list items (other empty elements are easy enough to deal with)
+    # remove empty blockquotes (other empty elements are easy enough to deal with)
     data.gsub!(/<blockquote>\s*(<br[^>]*>)?\s*<\/blockquote>/x,' ')
     
     # Fix unclosed <br>

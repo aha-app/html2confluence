@@ -247,7 +247,7 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
   end
 
   it "should transform code" do
-    expect(@textile).to include("{code}some_good_code{code}")
+    expect(html).to include_markup("{code}some_good_code{code}")
   end
   
 end

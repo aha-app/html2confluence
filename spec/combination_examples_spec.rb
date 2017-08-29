@@ -12,8 +12,8 @@ describe HTMLToConfluenceParser, "when running combination examples" do
     HTML
     
     markup = <<~MARKUP
-      # a 
-      # numbered *item* that is +underlined+. 
+      # a
+      # numbered *item* that is +underlined+.
       # list
     MARKUP
 
