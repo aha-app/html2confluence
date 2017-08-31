@@ -326,12 +326,74 @@ describe HTMLToConfluenceParser do
       <img src="https://bigaha.atlassian.net/images/icons/emoticons/check.png" />
     HTML
     markup = <<~MARKUP
-      :)
-      (!)
-      (off)
-      (/)
+      :)(!)(off)(/)
     MARKUP
     expect(html).to match_markup(markup)
   end
 
+  it "should handle headers" do
+    html = <<~HTML
+      <h1>Biggest heading</h1>
+    HTML
+    markup = <<~MARKUP
+      h1. Biggest heading
+    MARKUP
+    expect(html).to match_markup(markup)
+  end
+  
+  it "should handle empty links" do
+    html = <<~HTML
+      foo<a name="Biggestheading"></a>bar
+    HTML
+    markup = <<~MARKUP
+      foobar
+    MARKUP
+    expect(html).to match_markup(markup)
+  end
+
+  it "should handle empty links inside headers" do
+    html = <<~HTML
+      <h1><a name="Biggestheading"></a>Biggest heading</h1>
+    HTML
+    markup = <<~MARKUP
+      h1. Biggest heading
+    MARKUP
+    expect(html).to match_markup(markup)
+  end
+  
+  it "should handle font colors with whitespace and brs" do
+    html = <<~HTML
+      <p><font color="red"><br/>
+          look ma, red text!</font></p>
+    HTML
+    markup = <<~MARKUP
+      {color:red}
+      
+          look ma, red text!{color}
+    MARKUP
+    expect(html).to match_markup(markup)
+ end
+ 
+ it "should handle html entities" do
+   html = <<~HTML
+     <p>a<br/>
+     b</p>
+
+     <hr />
+
+     <p>a &#8211; b<br/>
+     a &#8212; b</p>
+    HTML
+    markup = <<~MARKUP
+      a
+      b
+      
+      ---
+      
+      a - b
+      a – b
+    MARKUP
+    expect(html).to match_markup(markup)
+  end
+  
 end

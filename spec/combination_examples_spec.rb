@@ -70,22 +70,22 @@ describe HTMLToConfluenceParser, "when running combination examples" do
     markup = <<~MARKUP
       One line
 
-      * Nested 
-      *# bullets 
-      *# go 
-      *# here 
-      *## dfsdf 
-      *## dsfs  
-      * Final bullet 
+      * Nested
+      *# bullets
+      *# go
+      *# here
+      *## dfsdf
+      *## dsfs
+      * Final bullet
 
       More stuff too
 
-      * In 
-      ** and 
-      * out 
-      *# with numbers 
-      *#* and sub-bullets  
-      * and back out 
+      * In
+      ** and
+      * out
+      *# with numbers
+      *#* and sub-bullets
+      * and back out
 
       h1. With +nice+ formatting.
     MARKUP

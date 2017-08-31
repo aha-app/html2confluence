@@ -9,16 +9,24 @@ class Walker
   end
   
   def convert
-    cleanup @parsed.accept(self)
+    postprocess preprocess(@parsed).accept(self)
   end
   
-  def cleanup(string)
-    # string.gsub(/\n+/, "\n").gsub(/#{HORIZONTAL_SPACE}+/, ' ')
+  def preprocess(string)
     string
-      .gsub(/\n+/, "\n")
-      .gsub(/#{HORIZONTAL_SPACE}+/, ' ')
+      # .gsub(/&(mdash|#8212);/, '---')
+      # .gsub(/&(ndash|#8211);/, '--')
+  end
+  
+  def postprocess(string)
+    # string.gsub(/\n+/, "\n").gsub(/#{HORIZONTAL_SPACE}+/, ' ')
+      # .gsub(/\n+/, "\n")
+      # .gsub(/#{HORIZONTAL_SPACE}+/, ' ')
+    string
       .gsub(NBSP, ' ')
       .gsub("\r", "\n")
+      .gsub(/&(mdash|#8212);/, '---')
+      .gsub(/&(ndash|#8211);/, '--')
   end
   
   def visit(node)
@@ -29,7 +37,13 @@ class Walker
     Array(nodes).reject do |node|
       node.text? and node.content.gsub(/[\s\n]+/, '').empty?
     end.map do |node|
-      visit node
+      [node, visit(node)]
+    end.map do |node, result|
+      if block_given?
+        yield node, result
+      else
+        result
+      end
     end.flatten.join
   end
   
@@ -46,6 +60,12 @@ class Walker
         handle node.children
       end
     else; super; end
+  end
+  
+  def handle_text(node)
+    node.content
+      .gsub(/&(mdash|#8212);/, '---')
+      .gsub(/&(ndash|#8211);/, '--')
   end
   
 # Node handlers
@@ -67,26 +87,32 @@ class Walker
   FORMAT_TAGS.each do |tags, markup|
     Array(tags).each do |tag|
       define_method :"handle_#{tag}" do |node|
-        start = if not node.previous or node.previous.name == "br" or (node.previous.text? and node.previous.content =~ /\W\Z/)
-          markup
+        if contentless? node
+          []
         else
-          ["{", markup, "}"]
+          start = if not node.previous or node.previous.name == "br" or (node.previous.text? and node.previous.content =~ /\W\Z/)
+            markup
+          else
+            ["{", markup, "}"]
+          end
+          close = if not node.next or node.next.name == "br" or (node.next.text? and node.next.content =~ /\A\W/)
+            markup
+          else
+            ["{", markup, "}"]
+          end
+          [start, handle(node.children), close]
         end
-        close = if not node.next or node.next.name == "br" or (node.next.text? and node.next.content =~ /\A\W/)
-          markup
-        else
-          ["{", markup, "}"]
-        end
-        [start, handle(node.children), close]
       end
     end
   end
   
-  BLOCK_TAGS = (1..6).map{|n| "h{n}"} << "bq"
+  SECTION_TAGS = (1..6).map{|n| "h#{n}"} << "bq"
   
-  BLOCK_TAGS.each do |tag|
+  SECTION_TAGS.each do |tag|
     define_method :"handle_#{tag}" do |node|
-      ["\n\n", tag, ".", " ", handle(node.children), "\n\n"]
+      # require 'pry'; Pry.config.input = STDIN; Pry.config.output = STDOUT; binding.pry
+      # ["\n\n", tag, ".", " ", handle(node.children), "\n\n"]
+      [tag, ".", " ", handle(node.children), "\n"]
     end
   end
   
@@ -95,30 +121,69 @@ class Walker
   CONTENT_TAGS.each do |tag|
     define_method :"handle_#{tag}" do |node|
       # ["\n\n", handle(node.children), "\n\n"]
-      [handle(node.children), "\n"]
+      # require 'pry'; Pry.config.input = STDIN; Pry.config.output = STDOUT; binding.pry
+      if contentless? node
+        []
+      else
+        [handle(node.children), "\n"]
+      end
     end
+  end
+  
+  def contentless?(node)
+    contentless = []
+    node.traverse do |child|
+      next if child == node
+      contentless << if child.text?
+        child.content.gsub(/\s\n/, '').empty?
+      elsif child.name == "br"
+        true
+      else
+        contentless? child
+      end
+    end
+    contentless.all?
   end
   
   LIST_TAGS = [:ul, :ol]
   
   LIST_TAGS.each do |tag|
     define_method :"handle_#{tag}" do |node|
-      [handle(node.children), "\n"]
+      if node.ancestors.any?{ |n| ["ul", "ol"].include? n.name }
+        handle(node.children)
+      else
+        ["\n", handle(node.children), "\n"]
+      end
+      # bullets = node.ancestors('ol,ul').to_a.unshift(node).reverse.map do |list|
+      #   bullet_for list
+      # end
+      # handle(node.elements) do |node, result|
+      #   [bullets, " ", result]
+      # end
     end
   end
   
   def handle_li(node)
-    list = node.ancestors.find do |parent|
-      ["ol", "ul"].include? parent.name
+    if node.elements.length == 1 and ["ul", "ol"].include? node.elements.first.name
+      handle(node.children)
+    else
+      bullets = node.ancestors.select do |parent|
+        ["ol", "ul"].include? parent.name
+      end.reverse.map do |list|
+        bullet_for list
+      end
+      [bullets, " ", handle(node.children), "\n"]
     end
-    bullet = if list&.name == "ol"
+  end
+  
+  def bullet_for(list)
+    if list&.name == "ol"
       "#"
     elsif list&.attr("type") == "square"
       "-"
     else
       "*"
     end
-    [bullet, " ", handle(node.children), "\n"]
   end
   
   def handle_table(node)
@@ -173,7 +238,7 @@ class Walker
     if shorthand
       ["bq.", " ", handle(node.children)]
     else
-      ["\n", "{quote}", "\n", handle(node.children), "\n", "{quote}"]
+      ["\n", "{quote}", "\n", handle(node.children), "\n", "{quote}", "\n"]
     end
   end
   
@@ -187,8 +252,11 @@ class Walker
   
   def handle_a(node)
     link = node["href"].to_s[1..-1]
-    link = ["|", link] if link
-    ["[", handle(node.children), link, "]", " "]
+    if link
+      ["[", handle(node.children), link, "]"]
+    else
+      handle(node.children)
+    end
   end
   
   def handle_font(node)
@@ -239,7 +307,7 @@ class Walker
   end
   
   def handle_br(node)
-    ["\r"]
+    ["\n"]
   end
   
   def handle_hr(node)
