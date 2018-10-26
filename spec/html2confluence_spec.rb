@@ -1,8 +1,10 @@
 # encoding: utf-8
 
 describe HTMLToConfluenceParser, "when converting html to textile" do
+  let(:parser) { HTMLToConfluenceParser.new }
+
   context "in a large html document" do
-    before :all do
+    before do
       html = <<-END
       <div>
 
@@ -124,7 +126,6 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
         |Not table
       </div>
       END
-      parser = HTMLToConfluenceParser.new
       parser.feed(html)
       @textile = parser.to_wiki_markup
     end
@@ -263,7 +264,6 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
     </blockquote>
     END
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     @textile = parser.to_wiki_markup
 
@@ -282,7 +282,6 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
     </blockquote>
     END
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     @textile = parser.to_wiki_markup
 
@@ -301,7 +300,6 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
     </blockquote>
     END
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     @textile = parser.to_wiki_markup
 

@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 describe HTMLToConfluenceParser, "when running complex tables examples" do
+  let(:parser) { HTMLToConfluenceParser.new }
   
    it "should handle table with newlines" do
     html = <<-END
@@ -19,7 +20,6 @@ Teacher|There to be more candy|Candy is:
 * Good for my teeth|
     END
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to include(markup.strip)
   end
@@ -33,7 +33,6 @@ Teacher|There to be more candy|Candy is:
 | |Empty| |
     END
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to include(markup.strip)
   end
@@ -50,7 +49,6 @@ a{noformat} |d |
 b{noformat} |c |
     END
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to include(markup.strip)
   end
@@ -77,7 +75,6 @@ b{noformat} |c |
 2{noformat} |3  |
     END
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to include(markup.strip)
   end
