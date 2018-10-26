@@ -15,4 +15,7 @@ Gem::Specification.new do |s|
   s.files        = Dir.glob("{lib,spec}/**/*") + %w(example.rb README.mdown)
 
   s.add_dependency "nokogiri"
+  s.add_development_dependency "rspec"
+  s.add_development_dependency "rubocop", "< 0.56"
+  s.add_development_dependency "simplecov"
 end

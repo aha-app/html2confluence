@@ -1,1 +1,3 @@
---color
+--colour
+--require spec_helper
+--profile
