@@ -12,6 +12,11 @@ first_block = <<END
   </p>
 
   <p>
+    <input type="checkbox">
+    <input type="checkbox" checked="">
+  </p>
+
+  <p>
     By <span class="author vcard fn">James Stewart</span>
     <br />filed under:
       <a href="http://jystewart.net/process/category/snippets/" title="View all posts in Snippets" rel="category tag">Snippets</a>
