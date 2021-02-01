@@ -239,6 +239,16 @@ class HTMLToConfluenceParser
     end
   end
 
+  def start_input(attrs)
+    if attrs['type'] == "checkbox"
+      if attrs['checked']
+        write("(/) ")
+      else
+        write("(x) ")
+      end
+    end
+  end
+
   # Jira doesn't like it when there's space padding around images in links, like thumbnails.
   # By checking to see if the link content is a single image, we can strip those out and preserve the link function
   def link_content_filtering_out_images(content)
