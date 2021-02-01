@@ -3,7 +3,6 @@ $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 require 'html2confluence'
 
 describe HTMLToConfluenceParser, "when running JIRA examples" do
-  
   before :all do
     html = <<-END
 <h1><a name="Biggestheading"></a>Biggest heading</h1>
@@ -147,7 +146,10 @@ _emphasis_
 ^superscript^
 ~subscript~
 {{monospaced}}
-bq. Some block quoted text
+
+{quote}
+Some block quoted text
+{quote}
 
 {quote}
  here is quotable
@@ -264,7 +266,7 @@ preformatted piece of text
   end
   
   it "should convert block quotes" do
-    expect(@textile).to match(/^bq. Some block quoted text/)
+    expect(@textile).to match(/^{quote}\nSome block quoted text\n{quote}/)
     expect(@textile).to match(/^\{quote\}\s*here is quotable\s*content to be quoted\s*{quote}/)
   end
   
@@ -311,6 +313,5 @@ preformatted piece of text
     expect(@textile).to include("(!)")
     expect(@textile).to include("(off)")
     expect(@textile).to include("(/)")
-  end
-  
+  end  
 end

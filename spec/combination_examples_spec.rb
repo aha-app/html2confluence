@@ -3,7 +3,6 @@ $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 require 'html2confluence'
 
 describe HTMLToConfluenceParser, "when running combination examples" do
-  
   it "should match complex examples" do
     html = <<-END
 <ol>
@@ -106,7 +105,13 @@ h1. With +nice+ formatting.
     END
 
     markup = <<-END
-{quote}\nbq. content here\n{quote}
+{quote}
+
+{quote}
+content here
+{quote}
+
+{quote}
     END
 
     parser = HTMLToConfluenceParser.new
@@ -207,9 +212,5 @@ h1. With +nice+ formatting.
     parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to eq(markup)
-  end
-  
+  end  
 end
-
-
-
