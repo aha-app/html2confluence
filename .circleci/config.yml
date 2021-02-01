@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  test:
+    working_directory: ~/html2confluence
+    docker:
+      - image: circleci/ruby:2.5
+    steps:
+      - checkout
+      - run:
+          name: Bundle
+          command: bundle install --jobs=4 --retry=3
+      - run:
+          name: RSpec
+          command: bundle exec rspec
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
