@@ -1,10 +1,8 @@
-# encoding: utf-8
-$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
-require 'html2confluence'
-
 describe HTMLToConfluenceParser, "when converting html to textile" do
+  let(:parser) { HTMLToConfluenceParser.new }
+
   context "in a large html document" do
-    before :all do
+    before do
       html = <<-END
       <div>
 
@@ -126,105 +124,105 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
         |Not table
       </div>
       END
-      parser = HTMLToConfluenceParser.new
+
       parser.feed(html)
-      @textile = parser.to_wiki_markup
+      @confluence = parser.to_wiki_markup
     end
 
     it "should convert heading tags" do
-      expect(@textile).to match(/^h1(\([^\)]+\))?\./)
+      expect(@confluence).to match(/^h1(\([^\)]+\))?\./)
     end
 
     it "should convert underline tags" do
-      expect(@textile).to include("text with +underlining+ is here")
+      expect(@confluence).to include("text with +underlining+ is here")
     end
 
     it "should not explicitly markup paragraphs unnecessarily" do
-      expect(@textile).to_not include("p. test paragraph without id or class attributes")
+      expect(@confluence).to_not include("p. test paragraph without id or class attributes")
     end
 
     it "should treat divs as block level elements, but ignore any attributes (effectively converting them to paragraphs)" do
-      expect(@textile).to include("\n\nA note\n\nFollowed by another note\n\n")
+      expect(@confluence).to include("\n\nA note\n\nFollowed by another note\n\n")
     end
 
     it "should not convert pointless spans to textile (i.e. without supported attributes)" do
-      expect(@textile).to_not include("%a useless span%")
+      expect(@confluence).to_not include("%a useless span%")
     end
 
     it "should convert class and id attributes" do
-      # We don't convert classes. expect(@textile).to include("h1(story.title entry-title#post-312).")
+      # We don't convert classes. expect(@confluence).to include("h1(story.title entry-title#post-312).")
     end
 
     it "should convert tables" do
-      expect(@textile).to include("\n\n||heading 1 ||heading 2 || \n|value 1 |value 2 | \n")
+      expect(@confluence).to include("\n\n||heading 1 ||heading 2 || \n|value 1 |value 2 | \n")
     end
 
     it "should convert tables with text immediately preceding the opening table tag" do
-      expect(@textile).to include("Some text before a table\n\n||heading 1 ||heading 2 || \n|value 1 |value 2 | \n")
+      expect(@confluence).to include("Some text before a table\n\n||heading 1 ||heading 2 || \n|value 1 |value 2 | \n")
     end
 
     it "should respect line breaks within block level elements" do
-      expect(@textile).to include("\n# test 1 \n# test 2\nwith a line break in the middle")
+      expect(@confluence).to include("\n# test 1 \n# test 2\nwith a line break in the middle")
     end
 
     it "should handle paragraphs nested within blockquote" do
-      expect(@textile).to include("{quote}\n\nparagraph inside a blockquote\n\nanother paragraph inside a blockquote\n\n{quote}")
+      expect(@confluence).to include("{quote}\n\nparagraph inside a blockquote\n\nanother paragraph inside a blockquote\n\n{quote}")
     end
 
     it "should retain leading and trailing whitespace within inline elements" do
-      expect(@textile).to include("test *invalid* list item 1")
+      expect(@confluence).to include("test *invalid* list item 1")
     end
 
     it "should respect trailing line break tags within other elements" do
-      expect(@textile).to include("*Please apply online at:*\n[www.something.co.uk/careers|http://www.something.co.uk/careers]")
+      expect(@confluence).to include("*Please apply online at:*\n[www.something.co.uk/careers|http://www.something.co.uk/careers]")
     end
 
     it "should handle nested inline elements" do
-      expect(@textile).to include(" *_test emphasised bold text_* test")
+      expect(@confluence).to include(" *_test emphasised bold text_* test")
     end
 
     it "should remove empty quicktags before returning" do
-      expect(@textile).to_not include("*more bold text* *\n*")
+      expect(@confluence).to_not include("*more bold text* *\n*")
     end
 
     it "should remove unsupported elements (e.g. script)" do
-      expect(@textile).to_not include('script')
+      expect(@confluence).to_not include('script')
     end
 
     it "should remove unsupported attributes (i.e. everything but class and id)" do
-      expect(@textile).to_not include('summary')
-      expect(@textile).to_not include('a table with a caption')
-      expect(@textile).to_not include('style')
-      expect(@textile).to_not include('color:red;')
+      expect(@confluence).to_not include('summary')
+      expect(@confluence).to_not include('a table with a caption')
+      expect(@confluence).to_not include('style')
+      expect(@confluence).to_not include('color:red;')
     end
 
     it "should clean up multiple blank lines created by tolerant parsing before returning" do
-      expect(@textile).to_not match(/(\n\n\s*){2,}/)
+      expect(@confluence).to_not match(/(\n\n\s*){2,}/)
     end
 
     it "should keep entity references" do
-      expect(@textile).to include("&copy;")
+      expect(@confluence).to include("&copy;")
     end
 
     it "should output unknown named entity references" do
-      expect(@textile).to include("&unknownref;")
+      expect(@confluence).to include("&unknownref;")
     end
 
     it "should convert numerical entity references to a utf-8 character" do
-      expect(@textile).to include("…")
+      expect(@confluence).to include("…")
     end
 
     it "should ignore entities that are already converted" do
-      expect(@textile).to include("Æïœü")
+      expect(@confluence).to include("Æïœü")
     end
 
     it "should ignore ampersands that are not part of an entity reference" do
-      expect(@textile).to include("Hughes & Hughes")
+      expect(@confluence).to include("Hughes & Hughes")
     end
 
     it "should retain whitespace surrounding entity references" do
-      expect(@textile).to include("… &euro; 100")
-      expect(@textile).to include("Something & something")
+      expect(@confluence).to include("… &euro; 100")
+      expect(@confluence).to include("Something & something")
     end
 
     it "should escape special characters" do
@@ -232,22 +230,22 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
       # characters that would otherwise be mistaken for markup. It should not
       # escape every instance of these characters.
       pending 'only escape correct characters'
-      expect(@textile).to include("\\# Not a list")
-      expect(@textile).to include("\\* Not a list")
-      expect(@textile).to include("\\- Not a list")
-      expect(@textile).to include("\\*Not bold\\*")
-      expect(@textile).to include("\\_Not a emph\\_")
-      expect(@textile).to include("\\{Not curly\\}")
-      expect(@textile).to include("\\|Not table")
+      expect(@confluence).to include("\\# Not a list")
+      expect(@confluence).to include("\\* Not a list")
+      expect(@confluence).to include("\\- Not a list")
+      expect(@confluence).to include("\\*Not bold\\*")
+      expect(@confluence).to include("\\_Not a emph\\_")
+      expect(@confluence).to include("\\{Not curly\\}")
+      expect(@confluence).to include("\\|Not table")
     end
 
     it "should support strikethrough" do
-      expect(@textile).to include("-strike 1-")
-      expect(@textile).to include("-strike 2-")
+      expect(@confluence).to include("-strike 1-")
+      expect(@confluence).to include("-strike 2-")
     end
 
     it "should transform code" do
-      expect(@textile).to include("{code}some_good_code{code}")
+      expect(@confluence).to include("{code}some_good_code{code}")
     end
   end
 
@@ -265,11 +263,10 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
     </blockquote>
     END
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
-    @textile = parser.to_wiki_markup
+    @confluence = parser.to_wiki_markup
 
-    expect(@textile).to eq("{quote}\n{noformat}\n\n{noformat} \n\n{noformat}\n\n{noformat} \n\n{quote}")
+    expect(@confluence).to eq("{quote}\n{noformat}\n\n{noformat} \n\n{noformat}\n\n{noformat} \n\n{quote}")
   end
 
   it "should convert ending blockquotes without a leading pre" do
@@ -284,11 +281,10 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
     </blockquote>
     END
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
-    @textile = parser.to_wiki_markup
+    @confluence = parser.to_wiki_markup
 
-    expect(@textile).to eq("{quote}\n\n{noformat}\n\n{noformat} \n\n{quote}")
+    expect(@confluence).to eq("{quote}\n\n{noformat}\n\n{noformat} \n\n{quote}")
   end
 
   it "should convert ending blockquotes without a nested pre" do
@@ -303,10 +299,9 @@ describe HTMLToConfluenceParser, "when converting html to textile" do
     </blockquote>
     END
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
-    @textile = parser.to_wiki_markup
+    @confluence = parser.to_wiki_markup
 
-    expect(@textile).to eq("{quote}\n{noformat}\n\n{noformat} \n\n{quote}")
+    expect(@confluence).to eq("{quote}\n{noformat}\n\n{noformat} \n\n{quote}")
   end
 end

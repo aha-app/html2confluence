@@ -1,8 +1,6 @@
-# encoding: utf-8
-$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
-require 'html2confluence'
-
 describe HTMLToConfluenceParser, "when running combination examples" do
+  let(:parser) { HTMLToConfluenceParser.new }
+
   it "should match complex examples" do
     html = <<-END
 <ol>
@@ -17,9 +15,7 @@ describe HTMLToConfluenceParser, "when running combination examples" do
 # numbered *item* that is +underlined+. 
 # list
     END
-    
-    
-    parser = HTMLToConfluenceParser.new
+
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to include(markup.strip)
   end
@@ -94,7 +90,6 @@ More stuff too
 h1. With +nice+ formatting.
     END
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to include(markup.strip)
   end
@@ -114,7 +109,6 @@ content here
 {quote}
     END
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to include(markup.strip)
   end
@@ -127,7 +121,6 @@ content here
 
     markup = "Previous\n\n*Scenario 4a: Existing deletes their ID*\n*Given* I am an existing user"
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to eq(markup)
   end
@@ -141,7 +134,6 @@ content here
 
     markup = "Previous line\n\n*Scenario 4a: Existing deletes their ID*\n*Given* I am an existing user"
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to eq(markup)
   end
@@ -151,7 +143,6 @@ content here
 
     markup = "*And* first line\n\n*second line*"
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to eq(markup)
   end
@@ -161,7 +152,6 @@ content here
 
     markup = "!a source!"
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to eq(markup)
   end
@@ -170,7 +160,6 @@ content here
     html = "<div>familiar with the XML<wbr>Http<wbr>Request Object</div>\n\n"
 
     markup = "familiar with the XMLHttpRequest Object"
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to eq(markup)
     
@@ -184,7 +173,6 @@ content here
 
     markup = "Previous line\n\n----"
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to eq(markup)
   end
@@ -196,7 +184,6 @@ content here
 
     markup = "A"
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to eq(markup)
   end
@@ -209,7 +196,6 @@ content here
 
     markup = "A"
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to eq(markup)
   end  

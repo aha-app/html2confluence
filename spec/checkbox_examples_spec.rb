@@ -1,8 +1,5 @@
-# encoding: utf-8
-$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
-require 'html2confluence'
-
 describe HTMLToConfluenceParser, "when running checkbox examples" do
+  let(:parser) { HTMLToConfluenceParser.new }
 
   it "should match checkboxes" do
     html = <<-END
@@ -17,16 +14,14 @@ describe HTMLToConfluenceParser, "when running checkbox examples" do
     END
 
     markup = <<-END
-* (/) Example 1
-* (/) Example 2
-* (x) Example 3
-* (/) Example 4
-* (x) Example 5
+* (/) Example 1 
+* (/) Example 2 
+* (x) Example 3 
+* (/) Example 4 
+* (x) Example 5 
     END
 
-    parser = HTMLToConfluenceParser.new
     parser.feed(html)
     expect(parser.to_wiki_markup.strip).to include(markup.strip)
   end
-  
 end
